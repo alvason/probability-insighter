@@ -3,11 +3,10 @@
 
 # <markdowncell>
 
-# # Diffusion computation
-# https://github.com/alvason/diffusion-computation
+# # Probability-insighter
+# https://github.com/alvason/probability-insighter
 # 
-# ### Section003 --- Stochastic solution for the diffusion equation
-# ##### Random distribution --- Logistic distribution 
+# ### Random distribution --- Logistic distribution
 
 # <codecell>
 
@@ -20,17 +19,38 @@ date:   03/19/2015
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+file_name = 'logistic-distribution'
 
-import alva_machinery_diffusion as alva
+import alva_machinery_probability as alva
 
 AlvaFontSize = 23
 AlvaFigSize = (16, 7)
 numberingFig = 0
 
+'''Logistic distribution'''
+figure_name = '-equation'
+file_suffix = '.png'
+save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize=(9, 6))
+plt.axis('off')
+plt.title(r'$ Logistic-distribution---probability-mass-function $',fontsize = AlvaFontSize)
+plt.text(0, 5.0/6, r'$ P_{b}(n|N) = \frac{N!}{n!(N - n)!} p^n (1 - p)^{N - n} $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 4.0/6, r'$ 1-- \ a \ set \ of \ N \ events $', fontsize = AlvaFontSize)
+plt.text(0, 3.0/6, r'$ 2-- \ either \ Success \ or \ Failure \ for \ each \ event $', fontsize = AlvaFontSize)
+plt.text(0, 2.0/6, r'$ 3-- \ the \ probability-p \ is \ the \ same \ for \ all \ events $', fontsize = AlvaFontSize)
+plt.text(0, 1.0/6, r'$ 4-- \ P(n|N) \ is \ the \ probability \ with \ n-success \ events \ in \ a \ total \ of \ N \ events $',
+         fontsize = AlvaFontSize)
+plt.savefig(save_figure, dpi = 300)
+plt.show()
+
 # <codecell>
 
 '''Logistic randomness --- Logistic distribution'''
-totalPoint_Input = int(300 + 1)
+totalPoint_Input = int(100 + 1)
 gInput = np.arange(totalPoint_Input)
 meanL = totalPoint_Input/2
 
@@ -60,6 +80,11 @@ gLevel = category[0]
 numberLevel = category[1]
 print category[2].shape
 
+# plotting
+figure_name = ''
+file_suffix = '.png'
+save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
 plot1 = figure.add_subplot(1, 2, 1)
@@ -72,7 +97,7 @@ if totalPoint_Input < 100:
     plot1.grid(True, which = 'minor')
 else:
     plot1.grid(True, which = 'major')
-plt.title(r'$ Random \ output \ (total-input = %i,\ mean = %f) $'%(totalPoint_Input, meanL)
+plt.title(r'$ Logistic (total-input = %i,\ mean = %f) $'%(totalPoint_Input, meanL)
           , fontsize = AlvaFontSize)
 plt.xlabel(r'$ input-time $', fontsize = AlvaFontSize)
 plt.ylabel(r'$ output $', fontsize = AlvaFontSize)
@@ -94,6 +119,7 @@ plt.ylabel(r'$ Output-level $', fontsize = AlvaFontSize)
 plt.legend(loc = (0, -0.2))
 
 figure.tight_layout()
+plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 # <codecell>

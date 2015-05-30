@@ -6,7 +6,7 @@
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
-# ### Random distribution --- Binomial distribution (discrete)
+# ### Random distribution --- Binomial distribution
 
 # <codecell>
 
@@ -22,7 +22,7 @@ import os
 dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
 file_name = 'binomial-distribution'
 
-import alva_machinery_diffusion as alva
+import alva_machinery_probability as alva
 
 AlvaFontSize = 23
 AlvaFigSize = (16, 7)
@@ -115,6 +115,7 @@ print category[2].shape
 
 binomial_D = 100*AlvaBinomialD(np.arange(totalLevel), totalLevel, probability_peak)
 
+# plotting
 figure_name = ''
 file_suffix = '.png'
 save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
