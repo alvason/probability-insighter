@@ -1,5 +1,5 @@
-# Probability insighter --- insigh into random distribution
+# Probability insighter --- insight into randomness
 
-### [Probability distribution](http://nbviewer.ipython.org/github/alvason/diffusion-computation/blob/master/stochasticD/random_distribution.ipynb)
+### [Probability distribution](https://github.com/alvason/probability-insighter/blob/master/binomial_random_distribution.ipynb)
 ![alt tag](https://github.com/alvason/diffusion-computation/blob/master/stochasticD/figure/gaussian-distribution.png)
 ![alt tag](https://github.com/alvason/diffusion-computation/blob/master/stochasticD/figure/poisson-distribution.png)
