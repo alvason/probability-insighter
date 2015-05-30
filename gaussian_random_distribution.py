@@ -3,11 +3,10 @@
 
 # <markdowncell>
 
-# # Diffusion computation
-# https://github.com/alvason/diffusion-computation
+# # Probability-insighter
+# https://github.com/alvason/probability-insighter
 # 
-# ### Section003 --- Stochastic solution for the diffusion equation
-# ##### Random distribution --- Gaussian distribution (standard normal distribution)
+# ### Random distribution --- Gaussian distribution (standard normal distribution)
 
 # <codecell>
 
@@ -20,8 +19,11 @@ date:   03/19/2015
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+file_name = 'gaussian-distribution'
 
-import alva_machinery_diffusion as alva
+import alva_machinery_probability as alva
 
 AlvaFontSize = 23
 AlvaFigSize = (16, 7)
@@ -45,6 +47,11 @@ category = alva.AlvaLevel(randomSeed, totalLevel, False)
 gLevel = category[0]
 numberLevel = category[1]
 print category[2].shape
+
+# plotting
+figure_name = ''
+file_suffix = '.png'
+save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
@@ -79,6 +86,7 @@ plt.ylabel(r'$ Output-level $', fontsize = AlvaFontSize)
 plt.legend(loc = (0, -0.2))
 
 figure.tight_layout()
+plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 # <codecell>

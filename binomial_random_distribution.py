@@ -3,12 +3,10 @@
 
 # <markdowncell>
 
-# # Diffusion computation
-# https://github.com/alvason/diffusion-computation
+# # Probability-insighter
+# https://github.com/alvason/probability-insighter
 # 
-# ### Section003 --- Stochastic solution for the diffusion equation
-# https://github.com/alvason/diffusion-computation/stochasticD
-# ##### Random distribution --- Binomial distribution (discrete)
+# ### Random distribution --- Binomial distribution (discrete)
 
 # <codecell>
 
@@ -21,7 +19,7 @@ date:   03/19/2015
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-dir_path = '/Users/al/Desktop/GitHub/diffusion-computation/stochasticD/figure'
+dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
 file_name = 'binomial-distribution'
 
 import alva_machinery_diffusion as alva
