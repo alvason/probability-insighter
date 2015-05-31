@@ -29,7 +29,7 @@ AlvaFontSize = 23
 AlvaFigSize = (16, 7)
 numberingFig = 0
 
-'''Logistic distribution'''
+# plotting
 figure_name = '-equation'
 file_suffix = '.png'
 save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)

@@ -20,20 +20,28 @@ date:   03/19/2015
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+file_name = 'poisson-distribution'
 
-import alva_machinery_diffusion as alva
+import alva_machinery_probability as alva
 
 AlvaFontSize = 23
 AlvaFigSize = (16, 7)
 numberingFig = 0
 
-'''Poisson process --- Poisson distribution'''
+# plotting
+figure_name = '-equation'
+file_suffix = '.png'
+save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(12, 3))
 plt.axis('off')
 plt.title(r'$ Poisson-distribution \ equation $',fontsize = AlvaFontSize)
 plt.text(0,2.0/3,r'$ P_{p}(n|N) = \frac{N!}{n!(N - n)!} p^n (1 - p)^{N - n} $', fontsize = 1.2*AlvaFontSize)
 plt.text(0,1.0/3,r'$ P_{m}(n) = \frac{e^{-m} m^n}{n!}, where \ the \ mean \ (average) \ m \equiv pN  $', fontsize = 1.2*AlvaFontSize)
+plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 # <codecell>
@@ -111,6 +119,11 @@ gLevel = category[0]
 numberLevel = category[1]
 print category[2].shape
 
+# plotting
+figure_name = ''
+file_suffix = '.png'
+save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
 plot1 = figure.add_subplot(1, 2, 1)
@@ -146,6 +159,7 @@ plt.ylabel(r'$ Output-level $', fontsize = AlvaFontSize)
 plt.legend(loc = (0, -0.2))
 
 figure.tight_layout()
+plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 # <codecell>
