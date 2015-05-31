@@ -3,11 +3,10 @@
 
 # <markdowncell>
 
-# # Diffusion computation
-# https://github.com/alvason/diffusion-computation
+# # Probability-insighter
+# https://github.com/alvason/probability-insighter
 # 
-# ### Section003 --- Stochastic solution for the diffusion equation
-# ##### Random distribution --- Poisson distribution 
+# ### Poisson random distribution 
 
 # <codecell>
 

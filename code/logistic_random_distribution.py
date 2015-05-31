@@ -6,7 +6,7 @@
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
-# ### Random distribution --- Logistic distribution
+# ### Logistic random distribution
 
 # <codecell>
 

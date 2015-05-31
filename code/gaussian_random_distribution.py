@@ -6,7 +6,7 @@
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
-# ### Random distribution --- Gaussian distribution (standard normal distribution)
+# Gaussian random distribution (standard normal distribution)
 
 # <codecell>
 
