@@ -4,7 +4,7 @@
 ![alt tag](https://github.com/alvason/probability-insighter/blob/master/figure/binomial-distribution-equation.png)
 ![alt tag](https://github.com/alvason/probability-insighter/blob/master/figure/binomial-distribution.png)
 
-### Poisson distribution](https://github.com/alvason/probability-insighter/blob/master/code/poisson_random_distribution.ipynb)
+### [Poisson distribution](https://github.com/alvason/probability-insighter/blob/master/code/poisson_random_distribution.ipynb)
 ![alt tag](https://github.com/alvason/probability-insighter/blob/master/figure/poisson-distribution-equation.png)
 ![alt tag](https://github.com/alvason/probability-insighter/blob/master/figure/poisson-distribution.png)
 
