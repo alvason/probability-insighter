@@ -187,24 +187,23 @@ plt.show()
 
 '''Binomial randomness --- Binomial distribution'''
 
-totalPoint_Input = int(100)
-gInput = np.arange(totalPoint_Input)
-output_level = totalPoint_Input
+total_event = int(100)
+gInput = np.arange(total_event)
+output_level = total_event
 probability_peak = 0.5
-randomSeed = np.random.binomial(output_level, probability_peak, totalPoint_Input)
+randomSeed = np.random.binomial(output_level, probability_peak, total_event)
 
-sumI = 0
-for i in range(totalPoint_Input):
-    sumI = sumI + randomSeed[i]
-meanI = sumI/(totalPoint_Input)
+sumP = 0
+for i in range(total_event):
+    sumP = sumP + randomSeed[i]
+meanP = sumP/(total_event)
 
-totalLevel = int(output_level)
+totalLevel = int(total_event/1)
 category = alva.AlvaLevel(randomSeed, totalLevel, False)
 gLevel = category[0]
 numberLevel = category[1]
-print category[2].shape
 
-binomial_D = totalPoint_Input*AlvaBinomialD(np.arange(totalLevel), totalLevel, probability_peak)
+binomial_D = total_event*AlvaBinomialD(np.arange(totalLevel), totalLevel, probability_peak)
 
 # plotting
 figure_name = ''
@@ -216,14 +215,13 @@ figure = plt.figure(numberingFig, figsize = AlvaFigSize)
 plot1 = figure.add_subplot(1, 2, 1)
 plot1.plot(gInput, randomSeed, color = 'gray', marker = 'o', label = 'data')
 plot1.plot(gInput, alva.AlvaMinMax(randomSeed), color = 'red', marker = 'o', label = 'minMaxSorting')
-if totalPoint_Input < 100:
+if total_event < 100:
     plot1.set_xticks(gInput, minor = True) 
     plot1.set_yticks(randomSeed, minor = True)
     plot1.grid(True, which = 'minor')
 else:
     plot1.grid(True, which = 'major')
-plt.title(r'$ Binomial \ (total-event = %i,\ mean = %f) $'%(totalPoint_Input, meanI)
-          , fontsize = AlvaFontSize)
+plt.title(r'$ Binomial \ randomness \ (mean = {:1.6f}) $'.format(meanP), fontsize = AlvaFontSize)
 plt.xlabel(r'$ event-input $', fontsize = AlvaFontSize)
 plt.ylabel(r'$ output $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
@@ -233,16 +231,16 @@ plt.legend(loc = (0, -0.2))
 plot2 = figure.add_subplot(1, 2, 2)
 plot2.plot(numberLevel, gLevel, color = 'red', marker = 'o', label = 'category') 
 plot2.plot(binomial_D, np.arange(totalLevel), color = 'blue', marker = 'o', label = 'Binomial distribution') 
-if totalPoint_Input < 100:
+if total_event < 100:
     plot2.set_xticks(numberLevel, minor = True) 
     plot2.set_yticks(gLevel, minor = True)
     plot2.grid(True, which = 'minor')
 else:
     plot2.grid(True, which = 'major')
-plt.title(r'$ Binomial \ distribution\ (data = %i,\ level = %i) $'%(totalPoint_Input, totalLevel)
+plt.title(r'$ Binomial \ distribution \ (events = {ev:},\ levels = {le:}) $'.format(ev = total_event, le = totalLevel)
           , fontsize = AlvaFontSize)
-plt.xlabel(r'$ input/level $', fontsize = AlvaFontSize)
-plt.ylabel(r'$ output-level $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ event/level $', fontsize = AlvaFontSize)
+plt.ylabel(r'$ level-range $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
 plt.legend(loc = (0, -0.2))

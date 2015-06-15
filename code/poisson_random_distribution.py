@@ -171,10 +171,10 @@ if totalLevel < 100:
     plot2.grid(True, which = 'minor')
 else:
     plot2.grid(True, which = 'major')
-plt.title(r'$ Poisson \ distribution \ (event = {ev:},\ level = {le:}) $'.format(ev = total_event, le = totalLevel)
+plt.title(r'$ Poisson \ distribution \ (events = {ev:},\ levels = {le:}) $'.format(ev = total_event, le = totalLevel)
           , fontsize = AlvaFontSize)
 plt.xlabel(r'$ event/level $', fontsize = AlvaFontSize)
-plt.ylabel(r'$ magnitude \ of \ level $', fontsize = AlvaFontSize)
+plt.ylabel(r'$ level-range $', fontsize = AlvaFontSize)
 plt.legend(loc = (0, -0.2))
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
