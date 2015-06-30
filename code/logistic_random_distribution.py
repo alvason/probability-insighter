@@ -37,12 +37,13 @@ save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(9, 6))
 plt.axis('off')
-plt.title(r'$ Logistic-distribution---probability-mass-function $',fontsize = AlvaFontSize)
-plt.text(0, 5.0/6, r'$ P_{b}(n|N) = \frac{N!}{n!(N - n)!} p^n (1 - p)^{N - n} $', fontsize = 1.2*AlvaFontSize)
-plt.text(0, 4.0/6, r'$ 1-- \ a \ set \ of \ N \ events $', fontsize = AlvaFontSize)
-plt.text(0, 3.0/6, r'$ 2-- \ either \ Success \ or \ Failure \ for \ each \ event $', fontsize = AlvaFontSize)
-plt.text(0, 2.0/6, r'$ 3-- \ the \ probability-p \ is \ the \ same \ for \ all \ events $', fontsize = AlvaFontSize)
-plt.text(0, 1.0/6, r'$ 4-- \ P(n|N) \ is \ the \ probability \ with \ n-success \ events \ in \ a \ total \ of \ N \ events $',
+plt.title(r'$ Logistic-distribution---probability-density-function $',fontsize = AlvaFontSize)
+plt.text(0, 5.0/6, r'$ P(d, m|x) = \frac{exp[-\frac{(x - m)}{d}]}{d(1 - exp[-\frac{(x - m)}{d}])^2} $',
+         fontsize = 1.2*AlvaFontSize)
+plt.text(0, 3.0/6, r'$ 1-- \ m \ is \ the \ mean \ number \ of \ events \ per \ interval \ (time \ or \ space) $',
+         fontsize = AlvaFontSize)
+plt.text(0, 2.0/6, r'$ 2-- \ d \ is \ the \ deviation \ with \ n-events \ per \ interval $', fontsize = AlvaFontSize)
+plt.text(0, 1.0/6, r'$ 3-- \ P(d, m|x) \ is \ the \ probability \ with \ n-events \ per \ interval $',
          fontsize = AlvaFontSize)
 plt.savefig(save_figure, dpi = 300)
 plt.show()
