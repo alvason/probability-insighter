@@ -1,21 +1,19 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
 # ### Exponential random distribution 
 
-# <codecell>
+# In[1]:
 
 '''
 author: Alvason Zhenhua Li
 date:   03/19/2015
 '''
 
-%matplotlib inline
+get_ipython().magic(u'matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -45,7 +43,8 @@ plt.text(0, 1.0/4, r'$ 2-- \ P(\mu|n) \ is \ the \ probability \ with \ n-events
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[2]:
 
 def AlvaExpD(i, meanP):
     P_distribution = 0.0*i
@@ -105,7 +104,8 @@ plt.yticks(fontsize = AlvaFontSize*0.6)
 figure.tight_layout()
 plt.show()
 
-# <codecell>
+
+# In[7]:
 
 '''Exponential randomness --- Exponential distribution'''
 total_event = int(1000)
@@ -171,6 +171,8 @@ figure.tight_layout()
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[ ]:
+
 
 

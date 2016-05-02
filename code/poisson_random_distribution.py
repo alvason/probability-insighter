@@ -1,21 +1,19 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
 # ### Poisson random distribution 
 
-# <codecell>
+# In[1]:
 
 '''
 author: Alvason Zhenhua Li
 date:   03/19/2015
 '''
 
-%matplotlib inline
+get_ipython().magic(u'matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -45,11 +43,15 @@ plt.text(0, 1.0/4, r'$ 2-- \ P(m|n) \ is \ the \ probability \ with \ n-events \
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[2]:
 
 def AlvaProduct(i):
     if type(i) != np.ndarray:
-        i = np.array([i])
+        i = np.array([i], dtype = int)
+    else:
+        i = np.int32(i)
+    # set 0! = 1
     A_product = 0.0*i + 1
     for j in range(np.size(i)):
         for k in range(1, i[j] + 1):        
@@ -60,9 +62,9 @@ def AlvaProduct(i):
     return (A_product)
 
 #testing
-#i = 100
-#print ('AlvaM =', AlvaProduct(i))
-#print ('NumPy =', np.prod(np.arange(1, i + 1), dtype=np.float64))
+i = 100
+print ('AlvaM_N! =', AlvaProduct(i))
+print ('NumPy_N! =', np.prod(np.arange(1, i + 1), dtype = np.float64))
 
 def AlvaPoissonD(i, meanP):
     P_distribution = 0.0*i
@@ -81,7 +83,7 @@ def AlvaPoissonC(m, meanP, poissonD):
 total_event = int(30)
 i_event = np.arange(1, total_event + 1)
 totalPoint_Input = total_event
-meanP = total_event/3.0
+meanP = total_event/30.0
 
 poisson_D = AlvaPoissonD(i_event, meanP)
 
@@ -122,7 +124,8 @@ plt.yticks(fontsize = AlvaFontSize*0.6)
 figure.tight_layout()
 plt.show()
 
-# <codecell>
+
+# In[3]:
 
 '''Poisson randomness --- Poisson distribution'''
 total_event = int(300)
@@ -188,6 +191,8 @@ figure.tight_layout()
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[ ]:
+
 
 

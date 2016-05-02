@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
 # ### home-made machinery for insight into randomness
 
-# <codecell>
+# In[ ]:
 
 '''
 author: Alvason Zhenhua Li
@@ -17,6 +15,61 @@ date:   04/16/2015
 Home-made machinery for sorting a list from min-max
 '''
 import numpy as np
+
+
+get_ipython().magic(u'matplotlib inline')
+
+import numpy as np
+import matplotlib.pyplot as plt
+###############
+# time-watching and progress-bar
+class TimeWatch(object):
+    def __init__(cell):
+        import time  
+        cell.start_time = time.time()
+    
+    def progressBar(cell, starting , current_step, stopping):
+        progressing = float(current_step - starting) / (stopping - starting) 
+        from IPython.core.display import clear_output
+        clear_output(wait = True) 
+        import time 
+        current_time = time.time()
+        print('[{:6.6f} second {:} {:}% {:}]'.format(current_time - cell.start_time
+                                              , int(10 * progressing) * '--'
+                                              , int(100 * progressing)
+                                              , int(10 - 10 * progressing) * '++'))
+    def runTime(cell):
+        import time 
+        current_time = time.time()
+        total_time = current_time - cell.start_time
+        print('[running time = {:6.6f} second]'.format(total_time))
+        return total_time
+###############
+import datetime
+previous_running_time = datetime.datetime.now()
+print ('Previous running time is {:}').format(previous_running_time)
+
+
+# In[ ]:
+
+### 
+def productA(xx):
+    # if xx is a scalar not array
+    if isinstance(xx, (int, float)):
+        xx = [xx]
+    # for converting numpy-scalar (0-dimensional array()) to 0-dimensional array([]) 
+    xx = np.atleast_1d(xx)
+    xx = np.asarray(xx, dtype = int)
+    total_point = len(xx)
+    # set 0! = 1
+    productX = np.zeros(total_point) + 1
+    for j in range(total_point):
+        for k in range(1, xx[j] + 1):        
+            productX[j] = productX[j]*k
+    return productX
+
+
+# In[1]:
 
 # min-max sorting
 def AlvaMinMax(data):

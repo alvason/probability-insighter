@@ -1,32 +1,180 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
 # ### Binomial random distribution
 
-# <codecell>
+# In[1]:
 
 '''
 author: Alvason Zhenhua Li
 date:   03/19/2015
 '''
-%matplotlib inline
+get_ipython().magic(u'matplotlib inline')
 
 import numpy as np
+import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+import time
 import os
-dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
-file_name = 'binomial-distribution'
 
 import alva_machinery_probability as alva
 
 AlvaFontSize = 23
-AlvaFigSize = (16, 7)
+AlvaFigSize = (16, 6)
 numberingFig = 0
+# for saving figure
+dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+file_name = 'binomial-distribution'
+###############
+import datetime
+previous_running_time = datetime.datetime.now()
+print ('Previous running time is {:}').format(previous_running_time)
+
+
+# ### Probability of only one member with a unique face (k = 1 from m-dice of b-face)
+# ### $ Pr(k = 1 | b, m) = m (b - 1)^{(m - k)} $
+# 
+# ### Probability of only two members with a unique face (k = 2 from m-dice of b-face)
+# ### $ Pr(k = 2 | b, m) = \frac{m!}{k!(m - k)!} (b - 1)^{(m - k)} $
+
+# In[2]:
+
+# 1'23456'---1 work_way
+# 1'23456'---1 work_way 
+# '1'23456---5 work_way
+# '1'23456---5 work_way
+# '1'23456---5 work_way
+
+
+# In[9]:
+
+def binomial_distribution_k(base = 6, digit = 2, wanted = 0, total_sampling = 10000, k = 2):
+    total_run = total_sampling
+    run_way_all = np.zeros([total_run, digit])
+    for i in range(total_run):
+        run_way = []
+        for rn in range(digit):
+            output_value = int(base * np.random.random())
+            run_way.append(output_value)
+        run_way_all[i] = run_way
+    way_all = pd.DataFrame(run_way_all, columns = ['rolling_' + str(i) for i in np.arange(digit)])
+    possible_way_all = way_all.drop_duplicates()
+    # column with only one face_value
+    work_way_all = pd.DataFrame()
+    for rn in range(digit):
+        aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
+        #print aaa
+        if len(possible_way_all.columns) > 1:
+            bbb = aaa.drop(aaa.columns[rn], axis = 1)
+            #print bbb
+            bbb = bbb[(bbb != wanted)].dropna()
+            #print bbb
+            ccc = aaa.loc[bbb.index]
+            #print ccc
+            work_way_all = work_way_all.append(ccc)
+        else:
+            work_way_all = work_way_all.append(aaa)
+    #print work_way_all
+    total_possible_way = len(possible_way_all)
+    total_work_way = len(work_way_all)
+    probability = float(total_work_way) / total_possible_way
+    return (probability, total_work_way, total_possible_way)
+
+def binomial_distribution_1(base = 6, digit = 2, wanted = 0, total_sampling = 10000):
+    total_run = total_sampling
+    run_way_all = np.zeros([total_run, digit])
+    for i in range(total_run):
+        run_way = []
+        for rn in range(digit):
+            output_value = int(base * np.random.random())
+            run_way.append(output_value)
+        run_way_all[i] = run_way
+    way_all = pd.DataFrame(run_way_all, columns = ['rolling_' + str(i) for i in np.arange(digit)])
+    possible_way_all = way_all.drop_duplicates()
+    # column with only one face_value
+    work_way_all = pd.DataFrame()
+    for rn in range(digit):
+        aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
+        #print aaa
+        if len(possible_way_all.columns) > 1:
+            bbb = aaa.drop(aaa.columns[rn], axis = 1)
+            #print bbb
+            bbb = bbb[(bbb != wanted)].dropna()
+            #print bbb
+            ccc = aaa.loc[bbb.index]
+            #print ccc
+            work_way_all = work_way_all.append(ccc)
+        else:
+            work_way_all = work_way_all.append(aaa)
+    #print work_way_all
+    total_possible_way = len(possible_way_all)
+    total_work_way = len(work_way_all)
+    probability = float(total_work_way) / total_possible_way
+    return (probability, total_work_way, total_possible_way)
+
+def base_digit_wanted(base = 6, digit = 2, wanted = 0, k = 1):
+    base = float(base)
+    digit = float(digit)
+    wanted = float(wanted)
+    total_possible_way = base**digit
+    binomial_coefficient = float(alva.productA(digit)) / (alva.productA(k) * alva.productA(digit - k)) 
+    total_work_way = binomial_coefficient * (base - 1)**(digit - 1)
+    probability = total_work_way / total_possible_way
+    return (probability, total_work_way, total_possible_way)
+
+##########
+baseN = 6
+wantedN = 0
+samplingN = 10**4
+max_member = 30
+
+xx = np.arange(1, max_member)
+pp = []
+total_work_way_all = []
+total_posible_way_all = []
+watching = alva.TimeWatch()
+for i in xx:
+    aaa = binomial_distribution_1(base = baseN, digit = i, wanted = wantedN, total_sampling = samplingN)
+    p = aaa[0]
+    total_work_way_all.append(aaa[1])
+    total_posible_way_all.append(aaa[2])
+    pp.append(p)
+    watching.progressBar(1, i, len(xx))
+print ('total_work_way = {:}'.format(total_work_way_all))
+print ('total_posi_way = {:}'.format(total_posible_way_all))
+
+###
+xx_model = np.arange(1, max_member)
+pp_model = []
+for i in xx_model:
+    p = base_digit_wanted(base = baseN, digit = i, wanted = wantedN)[0]
+    pp_model.append(p)
+print ('sum_of_all_probability = {:}'.format(np.sum(pp_model)))
+
+# plotting1
+figure = plt.figure(numberingFig, figsize = (16, 6))
+plot1 = figure.add_subplot(1, 1, 1)
+plot1.plot(xx_model, pp_model, marker ='o', markersize = 18
+           , color = 'green', alpha = 0.5, label = 'modeling')
+plt.plot(xx, pp, marker = '+', markersize = 20
+         , color = 'red', alpha = 0.9, label = 'sampling')
+
+plt.ylim(0, 0.5)
+plt.title(r'$ Binomial \ distribution-PMF $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
+plt.ylabel(r'$ Pr(k = 1|b, m) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6) 
+plt.grid(True)
+plt.legend(fontsize = AlvaFontSize)
+plt.show()
+
+
+# In[4]:
 
 # plotting
 figure_name = '-equation'
@@ -46,7 +194,8 @@ plt.text(0, 1.0/6, r'$ 4-- \ P(n|N) \ is \ the \ probability \ with \ n-success 
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[5]:
 
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(9, 6))
@@ -60,7 +209,8 @@ plt.text(0, 1.0/6, r'$ 4-- \ P(n|N) \ is \ the \ cumulative-probability \ with \
          fontsize = AlvaFontSize)
 plt.show()
 
-# <codecell>
+
+# In[6]:
 
 def AlvaProduct(i):
     if type(i) != np.ndarray:
@@ -96,7 +246,7 @@ def AlvaBinomialC(m, N, p, binomialD):
 total_event = int(30)
 i_event = np.arange(1, total_event + 1)
 totalPoint_Input = total_event
-probability_each = 0.5
+probability_each = 0.1
 
 binomial_D = AlvaBinomialD(i_event, total_event, probability_each)
 print ('total-probability = {:f}'.format(binomial_D.sum()))
@@ -135,7 +285,8 @@ plt.yticks(fontsize = AlvaFontSize*0.6)
 figure.tight_layout()
 plt.show()
 
-# <codecell>
+
+# In[7]:
 
 # plotting a list
 number_list = 9
@@ -183,14 +334,15 @@ plt.yticks(fontsize = AlvaFontSize*0.6)
 figure.tight_layout()
 plt.show()
 
-# <codecell>
+
+# In[8]:
 
 '''Binomial randomness --- Binomial distribution'''
 
 total_event = int(100)
 gInput = np.arange(total_event)
 output_level = total_event
-probability_peak = 0.5
+probability_peak = 0.1
 randomSeed = np.random.binomial(output_level, probability_peak, total_event)
 
 sumP = 0
@@ -248,7 +400,4 @@ plt.legend(loc = (0, -0.2))
 figure.tight_layout()
 plt.savefig(save_figure, dpi = 300)
 plt.show()
-
-# <codecell>
-
 
