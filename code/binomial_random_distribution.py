@@ -27,7 +27,7 @@ AlvaFontSize = 23
 AlvaFigSize = (16, 6)
 numberingFig = 0
 # for saving figure
-dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
 file_name = 'binomial-distribution'
 ###############
 import datetime
@@ -50,9 +50,38 @@ print ('Previous running time is {:}').format(previous_running_time)
 # '1'23456---5 work_way
 
 
-# In[9]:
+# In[3]:
 
-def binomial_distribution_k(base = 6, digit = 2, wanted = 0, total_sampling = 10000, k = 2):
+def base_digit_wanted(base = 6, digit = 2, wanted = 0, k = 1):
+    base = float(base)
+    digit = float(digit)
+    wanted = float(wanted)
+    total_possible_way = base**digit
+    binomial_coefficient = float(alva.productA(digit)) / (alva.productA(k) * alva.productA(digit - k)) 
+    total_work_way = binomial_coefficient * (base - 1)**(digit - k)
+    probability = total_work_way / total_possible_way
+    return (probability, total_work_way, total_possible_way)
+
+def only_one_wanted(possible_way_all, wanted):
+    work_way_all = pd.DataFrame()
+    for rn in range(len(possible_way_all.columns)):
+        # current column with one-wanted
+        aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
+        # checking non-current-column without any-wanted
+        if len(possible_way_all.columns) > 1:
+            # drop current-column
+            bbb = aaa.drop(aaa.columns[rn], axis = 1)
+            # non-current-column without any-wanted
+            bbb = bbb[(bbb != wanted)].dropna()
+            #print bbb
+            ccc = aaa.loc[bbb.index]
+            #print ccc
+            work_way_all = work_way_all.append(ccc)
+        else:
+            work_way_all = work_way_all.append(aaa)
+    return (work_way_all)
+
+def binomial_distribution_k(base = 6, digit = 2, wanted = 0, total_sampling = 10000, k = 1):
     total_run = total_sampling
     run_way_all = np.zeros([total_run, digit])
     for i in range(total_run):
@@ -66,12 +95,14 @@ def binomial_distribution_k(base = 6, digit = 2, wanted = 0, total_sampling = 10
     # column with only one face_value
     work_way_all = pd.DataFrame()
     for rn in range(digit):
+        # current column with one-wanted
         aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
-        #print aaa
+        # checking non-current-column without any-wanted
         if len(possible_way_all.columns) > 1:
+            # drop current-column
             bbb = aaa.drop(aaa.columns[rn], axis = 1)
-            #print bbb
-            bbb = bbb[(bbb != wanted)].dropna()
+            # non-current-column with only one-wanted
+            bbb = only_one_wanted(bbb, wanted)
             #print bbb
             ccc = aaa.loc[bbb.index]
             #print ccc
@@ -95,36 +126,13 @@ def binomial_distribution_1(base = 6, digit = 2, wanted = 0, total_sampling = 10
         run_way_all[i] = run_way
     way_all = pd.DataFrame(run_way_all, columns = ['rolling_' + str(i) for i in np.arange(digit)])
     possible_way_all = way_all.drop_duplicates()
-    # column with only one face_value
-    work_way_all = pd.DataFrame()
-    for rn in range(digit):
-        aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
-        #print aaa
-        if len(possible_way_all.columns) > 1:
-            bbb = aaa.drop(aaa.columns[rn], axis = 1)
-            #print bbb
-            bbb = bbb[(bbb != wanted)].dropna()
-            #print bbb
-            ccc = aaa.loc[bbb.index]
-            #print ccc
-            work_way_all = work_way_all.append(ccc)
-        else:
-            work_way_all = work_way_all.append(aaa)
+    # column with only one 
+    work_way_all = only_one_wanted(possible_way_all, wanted)
     #print work_way_all
     total_possible_way = len(possible_way_all)
     total_work_way = len(work_way_all)
     probability = float(total_work_way) / total_possible_way
-    return (probability, total_work_way, total_possible_way)
-
-def base_digit_wanted(base = 6, digit = 2, wanted = 0, k = 1):
-    base = float(base)
-    digit = float(digit)
-    wanted = float(wanted)
-    total_possible_way = base**digit
-    binomial_coefficient = float(alva.productA(digit)) / (alva.productA(k) * alva.productA(digit - k)) 
-    total_work_way = binomial_coefficient * (base - 1)**(digit - 1)
-    probability = total_work_way / total_possible_way
-    return (probability, total_work_way, total_possible_way)
+    return (probability, total_work_way, total_possible_way, work_way_all)
 
 ##########
 baseN = 6
@@ -144,33 +152,64 @@ for i in xx:
     total_posible_way_all.append(aaa[2])
     pp.append(p)
     watching.progressBar(1, i, len(xx))
+    ccc = aaa[-1]
 print ('total_work_way = {:}'.format(total_work_way_all))
 print ('total_posi_way = {:}'.format(total_posible_way_all))
-
 ###
-xx_model = np.arange(1, max_member)
-pp_model = []
-for i in xx_model:
-    p = base_digit_wanted(base = baseN, digit = i, wanted = wantedN)[0]
-    pp_model.append(p)
-print ('sum_of_all_probability = {:}'.format(np.sum(pp_model)))
+pp_k = []
+total_work_way_all_k = []
+total_posible_way_all_k = []
+watching = alva.TimeWatch()
+for i in xx:
+    aaa = binomial_distribution_k(base = baseN, digit = i, wanted = wantedN, total_sampling = samplingN)
+    p = aaa[0]
+    total_work_way_all_k.append(aaa[1])
+    total_posible_way_all_k.append(aaa[2])
+    pp_k.append(p)
+    watching.progressBar(1, i, len(xx))
+###
+xx_reality = np.arange(1, max_member)
+kk = [1, 2]
+pp_reality = []
+for i in xx_reality:
+    p = base_digit_wanted(base = baseN, digit = i, wanted = wantedN, k = kk[0])[0]
+    pp_reality.append(p)
+print ('sum_of_all_probability = {:}'.format(np.sum(pp_reality)))
+###
+kN = 2
+pp_k_reality = []
+for i in xx_reality:
+    p = base_digit_wanted(base = baseN, digit = i, wanted = wantedN, k = kk[1])[0]
+    pp_k_reality.append(p)
+print ('sum_of_all_probability = {:}'.format(np.sum(pp_k_reality)))
 
+### plotting
+figure_name = '-sampling-reality'
+file_suffix = '.png'
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
+numberingFig = numberingFig + 1
 # plotting1
 figure = plt.figure(numberingFig, figsize = (16, 6))
-plot1 = figure.add_subplot(1, 1, 1)
-plot1.plot(xx_model, pp_model, marker ='o', markersize = 18
-           , color = 'green', alpha = 0.5, label = 'modeling')
-plt.plot(xx, pp, marker = '+', markersize = 20
-         , color = 'red', alpha = 0.9, label = 'sampling')
+window1 = figure.add_subplot(1, 1, 1)
+window1.plot(xx_reality, pp_reality, marker ='o', markersize = 6
+           , color = 'green', alpha = 0.9, label = 'reality (k = {:})'.format(kk[0]))
+window1.plot(xx, pp, marker = 'o', markersize = 20
+         , color = 'red', alpha = 0.5, label = 'sampling', linewidth = 0)
+window1.plot(xx_reality, pp_k_reality, marker ='^', markersize = 6
+           , color = 'green', alpha = 0.9, label = 'reality (k = {:})'.format(kk[1]))
+window1.plot(xx, pp_k, marker = '^', markersize = 20
+         , color = 'blue', alpha = 0.5, label = 'sampling', linewidth = 0)
 
-plt.ylim(0, 0.5)
-plt.title(r'$ Binomial \ distribution-PMF $', fontsize = AlvaFontSize)
+plt.ylim(0, 1)
+plt.title(r'$ Binomial \ distribution-PMF \ (base-b = {:}) $'.format(baseN), fontsize = AlvaFontSize)
 plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
 plt.ylabel(r'$ Pr(k = 1|b, m) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
 plt.grid(True)
 plt.legend(fontsize = AlvaFontSize)
+figure.tight_layout() 
+plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
 plt.show()
 
 
@@ -179,7 +218,7 @@ plt.show()
 # plotting
 figure_name = '-equation'
 file_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(9, 6))
@@ -360,7 +399,7 @@ binomial_D = total_event*AlvaBinomialD(np.arange(totalLevel), totalLevel, probab
 # plotting
 figure_name = ''
 file_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
