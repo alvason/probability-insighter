@@ -1,26 +1,24 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Correlation-coefficient
 # https://github.com/alvason/correlation-coefficient
 # 
 # ### Linear fitness 
 
-# <codecell>
+# In[5]:
 
 '''
 author: Alvason Zhenhua Li
 date:   07/18/2015
 '''
 
-%matplotlib inline
+get_ipython().magic(u'matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-dir_path = '/Users/al/Desktop/GitHub/correlation-coefficient/figure'
+saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
 file_name = 'linear-fitness'
 
 import alva_machinery_statistics as alva
@@ -32,7 +30,7 @@ numberingFig = 0
 # plotting
 figure_name = '-equation'
 file_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(9, 6))
@@ -44,7 +42,8 @@ plt.text(0, 0.0/3, r'$ 2-- \ Variance_{raw} = \sum_{i = 0}^{n} (y_i - y_{fit})^2
 plt.savefig(save_figure, dpi = 100)
 plt.show()
 
-# <codecell>
+
+# In[6]:
 
 '''uniform randomness distribution'''
 total_event = int(3)
@@ -64,7 +63,7 @@ r2 = linear_fit[2]
 # plotting
 figure_name = '-correlation'
 figure_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = (18, 6))
@@ -111,7 +110,8 @@ figure.tight_layout()
 plt.savefig(save_figure, dpi = 10)
 plt.show()
 
-# <codecell>
+
+# In[9]:
 
 total_event = int(8)
 gEvent = np.arange(total_event)
@@ -162,7 +162,7 @@ rSquared = 0
 # plotting
 figure_name = '-correlation'
 figure_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = (18, 6))
@@ -221,7 +221,8 @@ figure.tight_layout()
 plt.savefig(save_figure, dpi = 100)
 plt.show()
 
-# <codecell>
+
+# In[8]:
 
 total_event = int(3)
 gEvent = np.arange(total_event)
@@ -256,6 +257,8 @@ def AlvaThreading(x, y, total_event):
 
 AlvaThreading(x, y, total_event)
 
-# <codecell>
+
+# In[ ]:
+
 
 
