@@ -17,3 +17,9 @@
 
 ### [Logistic distribution](https://github.com/alvason/probability-insighter/blob/master/code/logistic_random_distribution.ipynb)
 ![](/figure/logistic-distribution.png)
+
+# correlation-coefficient
+### fitness of correlation among data-sets
+####[linear fitness](https://github.com/alvason/correlation-coefficient/blob/master/code/linear_fitness.ipynb)
+![](/figure/linear-fitness-correlation.png)
+![](/figure/linear-fitness-equation.png)
