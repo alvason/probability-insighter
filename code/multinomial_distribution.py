@@ -28,7 +28,10 @@ AlvaFigSize = (16, 6)
 numberingFig = 0
 # for saving figure
 saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
-file_name = 'binomial-distribution'
+file_name = 'multinomial-distribution'
+AlvaColorCycle = ['blue', 'green', 'cyan'
+                  , 'pink', 'purple', 'deepskyblue'
+                  , 'red', 'lime']
 ###############
 import datetime
 previous_running_time = datetime.datetime.now()
@@ -93,7 +96,7 @@ class multinomial_D(object):
             total_work_way = len(work_way_all)
             pp = float(total_work_way) / total_possible_way
             probability.append(pp)
-            watching.progressBar(1, xn, len(digitX))
+            watching.progressBar(1, np.argwhere([digitX == xn])[0][1] + 1, len(digitX))
         return (digitX, probability)
         
     def possible_way(cell, base = None, digit = None, total_sampling = None):
@@ -161,54 +164,104 @@ class multinomial_D(object):
         probability = total_work_way / total_possible_way
         return (probability)
 ############################# 
-
 #if __name__ == '__main__':
 
-max_member = 30
+
+# In[4]:
+
+##########################################
+max_member = 50
 digitX = np.arange(1, max_member)
 ###
-aBD = multinomial_D(base = 6, total_wanted = 1, total_sampling = 10000)
-samplingD = aBD.sampling_pmf(digitX)
-xx1 = samplingD[0]
-pp1 = samplingD[1]
-###
-aBD = binomial_D(base = 6, total_wanted = 3, total_sampling = 1000)
-samplingD = aBD.sampling_pmf(digitX)
-xx = samplingD[0]
-pp = samplingD[1]
-##
-##
-realityD = aBD.reality_pmf(digitX)
-xx_reality = realityD[0]
-pp_reality = realityD[1]
+kk = np.arange(1, 16, 2)
+xx_all = []
+pp_all = []
+xx_reality_all = []
+pp_reality_all = []
+for kn in kk:
+    aMD = multinomial_D(base = 2, total_wanted = kn, total_sampling = 1000)
+    samplingD = aMD.sampling_pmf(digitX)
+    xx_all.append(samplingD[0])
+    pp_all.append(samplingD[1])
+    ##
+    realityD = aMD.reality_pmf(digitX)
+    xx_reality_all.append(realityD[0])
+    pp_reality_all.append(realityD[1])
+    
 ### plotting
-figure_name = '-sampling-reality'
+figure_name = '-sampling-reality-base{:}'.format(aMD.base)
 file_suffix = '.png'
 save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 numberingFig = numberingFig + 1
 # plotting1
-figure = plt.figure(numberingFig, figsize = (16, 6))
+figure = plt.figure(numberingFig, figsize = (16, 9))
 window1 = figure.add_subplot(1, 1, 1)
-window1.plot(xx_reality, pp_reality, marker ='o', markersize = 6
-           , color = 'green', alpha = 0.9, label = 'reality (k = {:})'.format(aBD.total_wanted))
-window1.plot(xx, pp, marker = 'o', markersize = 20
-         , color = 'red', alpha = 0.5, label = 'sampling', linewidth = 0)
-window1.plot(xx1, pp1, marker = 'o', markersize = 20
-         , color = 'green', alpha = 0.5, label = 'sampling', linewidth = 0)
-plt.ylim(0, 0.5)
-plt.title(r'$ Binomial \ distribution-PMF \ (base-b = {:}) $'.format(aBD.base), fontsize = AlvaFontSize)
+for kn in np.arange(len(kk)):
+    window1.plot(xx_reality_all[kn], pp_reality_all[kn], marker ='o', markersize = 6
+           , color = AlvaColorCycle[kn], alpha = 0.9, label = 'reality (k = {:})'.format(kk[kn]))
+    window1.plot(xx_all[kn], pp_all[kn], marker = 'o', markersize = 20
+         , color = AlvaColorCycle[kn], alpha = 0.5, label = 'sampling ({:})'.format(aMD.total_sampling), linewidth = 0)
+plt.ylim(0, 0.6)
+plt.title(r'$ Multinomial \ distribution-PMF \ (base \ b = {:}) $'.format(aMD.base), fontsize = AlvaFontSize)
 plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
-plt.ylabel(r'$ Pr(k = 1|b, m) $', fontsize = AlvaFontSize)
-plt.xticks(fontsize = AlvaFontSize*0.6)
-plt.yticks(fontsize = AlvaFontSize*0.6) 
+plt.ylabel(r'$ Pr(k|b, m) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.8)
+plt.yticks(fontsize = AlvaFontSize*0.8) 
 plt.grid(True)
-plt.legend(fontsize = AlvaFontSize)
+plt.legend(loc = (1, 0), fontsize = AlvaFontSize)
 figure.tight_layout() 
 plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
 plt.show()
 
 
-# In[4]:
+# In[5]:
+
+##########################################
+max_member = 50
+digitX = np.arange(1, max_member)
+###
+kk = np.arange(1, 16, 2)
+xx_all = []
+pp_all = []
+xx_reality_all = []
+pp_reality_all = []
+for kn in kk:
+    aMD = multinomial_D(base = 6, total_wanted = kn, total_sampling = 1000)
+    samplingD = aMD.sampling_pmf(digitX)
+    xx_all.append(samplingD[0])
+    pp_all.append(samplingD[1])
+    ##
+    realityD = aMD.reality_pmf(digitX)
+    xx_reality_all.append(realityD[0])
+    pp_reality_all.append(realityD[1])
+    
+### plotting
+figure_name = '-sampling-reality-base{:}'.format(aMD.base)
+file_suffix = '.png'
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
+numberingFig = numberingFig + 1
+# plotting1
+figure = plt.figure(numberingFig, figsize = (16, 9))
+window1 = figure.add_subplot(1, 1, 1)
+for kn in np.arange(len(kk)):
+    window1.plot(xx_reality_all[kn], pp_reality_all[kn], marker ='o', markersize = 6
+           , color = AlvaColorCycle[kn], alpha = 0.9, label = 'reality (k = {:})'.format(kk[kn]))
+    window1.plot(xx_all[kn], pp_all[kn], marker = 'o', markersize = 20
+         , color = AlvaColorCycle[kn], alpha = 0.5, label = 'sampling ({:})'.format(aMD.total_sampling), linewidth = 0)
+plt.ylim(0, 0.6)
+plt.title(r'$ Multinomial \ distribution-PMF \ (base \ b = {:}) $'.format(aMD.base), fontsize = AlvaFontSize)
+plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
+plt.ylabel(r'$ Pr(k|b, m) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.8)
+plt.yticks(fontsize = AlvaFontSize*0.8) 
+plt.grid(True)
+plt.legend(loc = (1, 0), fontsize = AlvaFontSize)
+figure.tight_layout() 
+plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
+plt.show()
+
+
+# In[6]:
 
 # plotting
 figure_name = '-equation'
@@ -229,7 +282,7 @@ plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 
-# In[5]:
+# In[7]:
 
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(9, 6))
@@ -244,7 +297,7 @@ plt.text(0, 1.0/6, r'$ 4-- \ P(n|N) \ is \ the \ cumulative-probability \ with \
 plt.show()
 
 
-# In[6]:
+# In[8]:
 
 #testing
 i = 100
@@ -297,7 +350,7 @@ figure.tight_layout()
 plt.show()
 
 
-# In[7]:
+# In[9]:
 
 # plotting a list
 number_list = 9
@@ -346,7 +399,7 @@ figure.tight_layout()
 plt.show()
 
 
-# In[8]:
+# In[10]:
 
 '''Binomial randomness --- Binomial distribution'''
 

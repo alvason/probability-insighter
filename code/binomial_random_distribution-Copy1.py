@@ -52,135 +52,137 @@ print ('Previous running time is {:}').format(previous_running_time)
 
 # In[3]:
 
-class multinomial_D(object):
-    def __init__(cell, base = None, digit = None
-                 , wanted_event = None
-                 , total_wanted = None
-                 , total_sampling = None
-                 , total_unit = None, **kwargs):
-        if base is None:
-            base = 6
-        cell.base = base
-        if digit is None:
-            digit = 2
-        cell.digit = digit
-        if wanted_event is None:
-            wanted_event = 0
-        cell.wanted_event = wanted_event
-        if total_wanted is None:
-            total_wanted = 1
-        cell.total_wanted = total_wanted
-        if total_sampling is None:
-            total_sampling = 10**4
-        cell.total_sampling = total_sampling
-    
-    # distribution of probability_mass_function
-    def sampling_pmf(cell, digitX):
-        #digitX = np.asarray(digitX)
-        # a integering-data step
-        digitX = np.int64(digitX)
-        # filter out negative and zero data
-        digitX = digitX[digitX > 0]
-        # avoiding invalid input because digit >= total_wanted 
-        digitX = digitX[digitX >= cell.total_wanted]
-        probability = []
-        watching = alva.TimeWatch()
-        for xn in digitX:
-            cell.digit = xn
-            possible_way_all = cell.possible_way()
-            work_way_all = cell.work_way()
-            total_possible_way = len(possible_way_all)
-            total_work_way = len(work_way_all)
-            pp = float(total_work_way) / total_possible_way
-            probability.append(pp)
-            watching.progressBar(1, xn, len(digitX))
-        return (digitX, probability)
-        
-    def possible_way(cell, base = None, digit = None, total_sampling = None):
-        if base is None:
-            base = cell.base
-        if digit is None:
-            digit = cell.digit
-        if total_sampling is None:
-            total_sampling = cell.total_sampling
-        ###
-        sampling_way_all = np.zeros([total_sampling, digit])
-        for sn in range(total_sampling):
-            sampling_way = np.zeros([digit])
-            for dn in range(digit):
-                sampling_way[dn] = int(base * np.random.random())
-            sampling_way_all[sn] = sampling_way
-        way_all = pd.DataFrame(sampling_way_all, columns = ['event_unit_' + str(i) for i in np.arange(digit)])
-        possible_way_all = way_all.drop_duplicates()
-        cell.possible_way_all = possible_way_all
-        return (cell.possible_way_all)
+def base_digit_wanted(base = 6, digit = 2, wanted = 0, k = 1):
+    base = float(base)
+    digit = float(digit)
+    wanted = float(wanted)
+    total_possible_way = base**digit
+    binomial_coefficient = float(alva.productA(digit)) / (alva.productA(k) * alva.productA(digit - k)) 
+    total_work_way = binomial_coefficient * (base - 1)**(digit - k)
+    probability = total_work_way / total_possible_way
+    return (probability, total_work_way, total_possible_way)
 
-    def work_way(cell, possible_way_all = None, wanted_event = None, total_wanted = None):
-        if possible_way_all is None:
-            possible_way_all = cell.possible_way_all
-        if wanted_event is None:
-            wanted_event = cell.wanted_event
-        if total_wanted is None:
-            total_wanted = cell.total_wanted
+def only_one_wanted(possible_way_all, wanted):
+    work_way_all = pd.DataFrame()
+    for rn in range(len(possible_way_all.columns)):
+        # current column with one-wanted
+        aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
+        # checking non-current-column without any-wanted
+        if len(possible_way_all.columns) > 1:
+            # drop current-column
+            bbb = aaa.drop(aaa.columns[rn], axis = 1)
+            # non-current-column without any-wanted
+            bbb = bbb[(bbb != wanted)].dropna()
+            #print bbb
+            ccc = aaa.loc[bbb.index]
+            #print ccc
+            work_way_all = work_way_all.append(ccc)
+        else:
+            work_way_all = work_way_all.append(aaa)
+    return (work_way_all)
 
-        # like_way is a way with at least one-wanted 
-        like_way_all = possible_way_all[possible_way_all == wanted_event]
-        work_way_all = like_way_all[like_way_all.isnull().sum(axis = 1) == (cell.digit - total_wanted)]
-        cell.work_way_all = work_way_all
-        return (cell.work_way_all)
-    
-    # distribution of probability_mass_function
-    def reality_pmf(cell, digitX):
-        #digitX = np.asarray(digitX)
-        # a integering-data step
-        digitX = np.int64(digitX)
-        # filter out negative and zero data
-        digitX = digitX[digitX > 0]
-        # avoiding invalid input because digit >= total_wanted 
-        digitX = digitX[digitX >= cell.total_wanted]
-        probability = []
-        for xn in digitX:
-            cell.digit = xn
-            aaa = cell.base_digit_reality()
-            probability.append(aaa)
-        return (digitX, probability)
-    
-    def base_digit_reality(cell, base = None, digit = None, total_wanted = None):
-        if base is None:
-            base = cell.base
-        if digit is None:
-            digit = cell.digit
-        if total_wanted is None:
-            total_wanted = cell.total_wanted
-        base = float(base)
-        digit = float(digit)
-        k = float(total_wanted)
-        total_possible_way = base**digit
-        binomial_coefficient = float(alva.productA(digit)) / (alva.productA(k) * alva.productA(digit - k)) 
-        total_work_way = binomial_coefficient * (base - 1)**(digit - k)
-        probability = total_work_way / total_possible_way
-        return (probability)
-############################# 
+def binomial_distribution_k(base = 6, digit = 2, wanted = 0, total_sampling = 10000, k = 1):
+    total_run = total_sampling
+    run_way_all = np.zeros([total_run, digit])
+    for i in range(total_run):
+        run_way = []
+        for rn in range(digit):
+            output_value = int(base * np.random.random())
+            run_way.append(output_value)
+        run_way_all[i] = run_way
+    way_all = pd.DataFrame(run_way_all, columns = ['rolling_' + str(i) for i in np.arange(digit)])
+    possible_way_all = way_all.drop_duplicates()
+    # column with only one face_value
+    work_way_all = pd.DataFrame()
+    for rn in range(digit):
+        # current column with one-wanted
+        aaa = possible_way_all[possible_way_all[[rn]].values == wanted]
+        # checking non-current-column without any-wanted
+        if len(possible_way_all.columns) > 1:
+            # drop current-column
+            bbb = aaa.drop(aaa.columns[rn], axis = 1)
+            # non-current-column with only one-wanted
+            bbb = only_one_wanted(bbb, wanted)
+            #print bbb
+            ccc = aaa.loc[bbb.index]
+            #print ccc
+            work_way_all = work_way_all.append(ccc)
+        else:
+            work_way_all = work_way_all.append(aaa)
+    #print work_way_all
+    total_possible_way = len(possible_way_all)
+    total_work_way = len(work_way_all)
+    probability = float(total_work_way) / total_possible_way
+    return (probability, total_work_way, total_possible_way)
 
-#if __name__ == '__main__':
+def binomial_distribution_1(base = 6, digit = 2, wanted = 0, total_sampling = 10000):
+    total_run = total_sampling
+    run_way_all = np.zeros([total_run, digit])
+    for i in range(total_run):
+        run_way = []
+        for rn in range(digit):
+            output_value = int(base * np.random.random())
+            run_way.append(output_value)
+        run_way_all[i] = run_way
+    way_all = pd.DataFrame(run_way_all, columns = ['rolling_' + str(i) for i in np.arange(digit)])
+    possible_way_all = way_all.drop_duplicates()
+    # column with only one 
+    work_way_all = only_one_wanted(possible_way_all, wanted)
+    #print work_way_all
+    total_possible_way = len(possible_way_all)
+    total_work_way = len(work_way_all)
+    probability = float(total_work_way) / total_possible_way
+    return (probability, total_work_way, total_possible_way, work_way_all)
 
+##########################################################################
+baseN = 6
+wantedN = 0
+samplingN = 10**3
 max_member = 30
-digitX = np.arange(1, max_member)
+
+xx = np.arange(1, max_member)
+pp = []
+total_work_way_all = []
+total_posible_way_all = []
+watching = alva.TimeWatch()
+for i in xx:
+    aaa = binomial_distribution_1(base = baseN, digit = i, wanted = wantedN, total_sampling = samplingN)
+    p = aaa[0]
+    total_work_way_all.append(aaa[1])
+    total_posible_way_all.append(aaa[2])
+    pp.append(p)
+    watching.progressBar(1, i, len(xx))
+    ccc = aaa[-1]
+print ('total_work_way = {:}'.format(total_work_way_all))
+print ('total_posi_way = {:}'.format(total_posible_way_all))
 ###
-aBD = multinomial_D(base = 6, total_wanted = 1, total_sampling = 10000)
-samplingD = aBD.sampling_pmf(digitX)
-xx1 = samplingD[0]
-pp1 = samplingD[1]
+pp_k = []
+total_work_way_all_k = []
+total_posible_way_all_k = []
+watching = alva.TimeWatch()
+for i in xx:
+    aaa = binomial_distribution_k(base = baseN, digit = i, wanted = wantedN, total_sampling = samplingN)
+    p = aaa[0]
+    total_work_way_all_k.append(aaa[1])
+    total_posible_way_all_k.append(aaa[2])
+    pp_k.append(p)
+    watching.progressBar(1, i, len(xx))
 ###
-aBD = binomial_D(base = 6, total_wanted = 3, total_sampling = 1000)
-samplingD = aBD.sampling_pmf(digitX)
-xx = samplingD[0]
-pp = samplingD[1]
-##
-##
-realityD = aBD.reality_pmf(digitX)
-xx_reality = realityD[0]
-pp_reality = realityD[1]
+xx_reality = np.arange(1, max_member)
+kk = [1, 2]
+pp_reality = []
+for i in xx_reality:
+    p = base_digit_wanted(base = baseN, digit = i, wanted = wantedN, k = kk[0])[0]
+    pp_reality.append(p)
+print ('sum_of_all_probability = {:}'.format(np.sum(pp_reality)))
+###
+kN = 2
+pp_k_reality = []
+for i in xx_reality:
+    p = base_digit_wanted(base = baseN, digit = i, wanted = wantedN, k = kk[1])[0]
+    pp_k_reality.append(p)
+print ('sum_of_all_probability = {:}'.format(np.sum(pp_k_reality)))
+
 ### plotting
 figure_name = '-sampling-reality'
 file_suffix = '.png'
@@ -190,13 +192,16 @@ numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = (16, 6))
 window1 = figure.add_subplot(1, 1, 1)
 window1.plot(xx_reality, pp_reality, marker ='o', markersize = 6
-           , color = 'green', alpha = 0.9, label = 'reality (k = {:})'.format(aBD.total_wanted))
+           , color = 'green', alpha = 0.9, label = 'reality (k = {:})'.format(kk[0]))
 window1.plot(xx, pp, marker = 'o', markersize = 20
          , color = 'red', alpha = 0.5, label = 'sampling', linewidth = 0)
-window1.plot(xx1, pp1, marker = 'o', markersize = 20
-         , color = 'green', alpha = 0.5, label = 'sampling', linewidth = 0)
-plt.ylim(0, 0.5)
-plt.title(r'$ Binomial \ distribution-PMF \ (base-b = {:}) $'.format(aBD.base), fontsize = AlvaFontSize)
+window1.plot(xx_reality, pp_k_reality, marker ='^', markersize = 6
+           , color = 'green', alpha = 0.9, label = 'reality (k = {:})'.format(kk[1]))
+window1.plot(xx, pp_k, marker = '^', markersize = 20
+         , color = 'blue', alpha = 0.5, label = 'sampling', linewidth = 0)
+
+plt.ylim(0, 1)
+plt.title(r'$ Binomial \ distribution-PMF \ (base-b = {:}) $'.format(baseN), fontsize = AlvaFontSize)
 plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
 plt.ylabel(r'$ Pr(k = 1|b, m) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
@@ -269,7 +274,7 @@ def AlvaBinomialC(m, N, p, binomialD):
 total_event = int(30)
 i_event = np.arange(1, total_event + 1)
 totalPoint_Input = total_event
-probability_each = 0.5
+probability_each = 0.1
 
 binomial_D = AlvaBinomialD(i_event, total_event, probability_each)
 print ('total-probability = {:f}'.format(binomial_D.sum()))
