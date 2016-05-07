@@ -1,4 +1,4 @@
-# Probability insighter --- Xsight into distribution from randomness
+# Probability insighter --- Xsight into distribution through randomness
 ## Some important probility distributions
 
 ### [Multinomial distribution](https://github.com/alvason/probability-insighter/blob/master/code/multinomial_distribution.ipynb)
