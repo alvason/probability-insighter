@@ -4,7 +4,7 @@
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
-# ### Multinomial random distribution
+# ### base_digit_wanted distribution
 
 # In[1]:
 
@@ -58,40 +58,45 @@ print ('Previous running time is {:}').format(previous_running_time)
 class multinomial_D(object):
     def __init__(cell, base = None, digit = None
                  , wanted_event = None
+                 , total_wanted = None
                  , total_sampling = None
                  , total_unit = None, **kwargs):
         if base is None:
             base = 6
         cell.base = base
         if digit is None:
-            digit = 10
+            digit = 2
         cell.digit = digit
         if wanted_event is None:
             wanted_event = 0
         cell.wanted_event = wanted_event
+        if total_wanted is None:
+            total_wanted = 1
+        cell.total_wanted = total_wanted
         if total_sampling is None:
             total_sampling = 10**4
         cell.total_sampling = total_sampling
     
     # distribution of probability_mass_function
-    def sampling_pmf(cell, digitX = None):
-        if digitX is None:
-            digitX = np.arange(cell.digit + 1)
-        digitX = np.asarray(digitX)
+    def sampling_pmf(cell, digitX):
+        #digitX = np.asarray(digitX)
         # a integering-data step
         digitX = np.int64(digitX)
         # filter out negative and zero data
-        digitX = digitX[digitX >= 0]
+        digitX = digitX[digitX > 0]
+        # avoiding invalid input because digit >= total_wanted 
+        digitX = digitX[digitX >= cell.total_wanted]
+        probability = []
         watching = alva.TimeWatch()
-        probability = np.zeros([len(digitX)])
-        for xn in range(len(digitX)):
-            cell.total_wanted = digitX[xn]
+        for xn in digitX:
+            cell.digit = xn
             possible_way_all = cell.possible_way()
             work_way_all = cell.work_way()
             total_possible_way = len(possible_way_all)
             total_work_way = len(work_way_all)
-            probability[xn] = float(total_work_way) / total_possible_way  
-            watching.progressBar(1, xn + 1, len(digitX))
+            pp = float(total_work_way) / total_possible_way
+            probability.append(pp)
+            watching.progressBar(1, np.argwhere([digitX == xn])[0][1] + 1, len(digitX))
         return (digitX, probability)
         
     def possible_way(cell, base = None, digit = None, total_sampling = None):
@@ -128,18 +133,19 @@ class multinomial_D(object):
         return (cell.work_way_all)
     
     # distribution of probability_mass_function
-    def reality_pmf(cell, digitX = None):
-        if digitX is None:
-            digitX = np.arange(cell.digit + 1)
-        digitX = np.asarray(digitX)
+    def reality_pmf(cell, digitX):
+        #digitX = np.asarray(digitX)
         # a integering-data step
         digitX = np.int64(digitX)
         # filter out negative and zero data
-        digitX = digitX[digitX >= 0]
-        probability = np.zeros([len(digitX)])
-        for xn in range(len(digitX)):
-            cell.total_wanted = digitX[xn]
-            probability[xn] = cell.base_digit_reality()
+        digitX = digitX[digitX > 0]
+        # avoiding invalid input because digit >= total_wanted 
+        digitX = digitX[digitX >= cell.total_wanted]
+        probability = []
+        for xn in digitX:
+            cell.digit = xn
+            aaa = cell.base_digit_reality()
+            probability.append(aaa)
         return (digitX, probability)
     
     def base_digit_reality(cell, base = None, digit = None, total_wanted = None):
@@ -159,27 +165,26 @@ class multinomial_D(object):
         return (probability)
 ############################# 
 #if __name__ == '__main__':
-aMD = multinomial_D(base = 2, digit = 8, total_sampling = 1000)
-ppp = aMD.possible_way()
-www = aMD.work_way(total_wanted = 7)
-ppp.loc[www.index]
 
 
 # In[4]:
 
 ##########################################
+max_member = 50
+digitX = np.arange(1, max_member)
+###
+kk = np.arange(1, 16, 2)
 xx_all = []
 pp_all = []
 xx_reality_all = []
 pp_reality_all = []
-base_list = np.array([2, 6])
-for bn in range(len(base_list)):
-    aMD = multinomial_D(base = base_list[bn], digit = 20, total_sampling = 1000)
-    samplingD = aMD.sampling_pmf()
+for kn in kk:
+    aMD = multinomial_D(base = 2, total_wanted = kn, total_sampling = 1000)
+    samplingD = aMD.sampling_pmf(digitX)
     xx_all.append(samplingD[0])
     pp_all.append(samplingD[1])
     ##
-    realityD = aMD.reality_pmf()
+    realityD = aMD.reality_pmf(digitX)
     xx_reality_all.append(realityD[0])
     pp_reality_all.append(realityD[1])
     
@@ -191,17 +196,62 @@ numberingFig = numberingFig + 1
 # plotting1
 figure = plt.figure(numberingFig, figsize = (16, 9))
 window1 = figure.add_subplot(1, 1, 1)
-for i in range(len(base_list)):
-    window1.plot(xx_reality_all[i], pp_reality_all[i], marker ='o', markersize = 6
-           , color = AlvaColorCycle[i], alpha = 0.9, label = 'reality (base-b = {:})'.format(base_list[i]))
-    window1.plot(xx_all[i], pp_all[i], marker = 'o', markersize = 20
-                 , color = AlvaColorCycle[i], alpha = 0.5, linewidth = 0
-                 , label = 'sampling (size={:}), totalP = {:0.3f}'.format(aMD.total_sampling, pp_all[i].sum()))
-plt.ylim(0, 0.5)
-plt.title(r'$ Multinomial \ distribution-PMF $'
-          , fontsize = AlvaFontSize)
-plt.xlabel(r'$ k (total-wanted \ in \ digit-d = {:}) $'.format(aMD.digit), fontsize = AlvaFontSize)
-plt.ylabel(r'$ Pr(k|b, d) $', fontsize = AlvaFontSize)
+for kn in np.arange(len(kk)):
+    window1.plot(xx_reality_all[kn], pp_reality_all[kn], marker ='o', markersize = 6
+           , color = AlvaColorCycle[kn], alpha = 0.9, label = 'reality (k = {:})'.format(kk[kn]))
+    window1.plot(xx_all[kn], pp_all[kn], marker = 'o', markersize = 20
+         , color = AlvaColorCycle[kn], alpha = 0.5, label = 'sampling ({:})'.format(aMD.total_sampling), linewidth = 0)
+plt.ylim(0, 0.6)
+plt.title(r'$ Multinomial \ distribution-PMF \ (base \ b = {:}) $'.format(aMD.base), fontsize = AlvaFontSize)
+plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
+plt.ylabel(r'$ Pr(k|b, m) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.8)
+plt.yticks(fontsize = AlvaFontSize*0.8) 
+plt.grid(True)
+plt.legend(loc = (1, 0), fontsize = AlvaFontSize)
+figure.tight_layout() 
+plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
+plt.show()
+
+
+# In[5]:
+
+##########################################
+max_member = 50
+digitX = np.arange(1, max_member)
+###
+kk = np.arange(1, 16, 2)
+xx_all = []
+pp_all = []
+xx_reality_all = []
+pp_reality_all = []
+for kn in kk:
+    aMD = multinomial_D(base = 6, total_wanted = kn, total_sampling = 1000)
+    samplingD = aMD.sampling_pmf(digitX)
+    xx_all.append(samplingD[0])
+    pp_all.append(samplingD[1])
+    ##
+    realityD = aMD.reality_pmf(digitX)
+    xx_reality_all.append(realityD[0])
+    pp_reality_all.append(realityD[1])
+    
+### plotting
+figure_name = '-sampling-reality-base{:}'.format(aMD.base)
+file_suffix = '.png'
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
+numberingFig = numberingFig + 1
+# plotting1
+figure = plt.figure(numberingFig, figsize = (16, 9))
+window1 = figure.add_subplot(1, 1, 1)
+for kn in np.arange(len(kk)):
+    window1.plot(xx_reality_all[kn], pp_reality_all[kn], marker ='o', markersize = 6
+           , color = AlvaColorCycle[kn], alpha = 0.9, label = 'reality (k = {:})'.format(kk[kn]))
+    window1.plot(xx_all[kn], pp_all[kn], marker = 'o', markersize = 20
+         , color = AlvaColorCycle[kn], alpha = 0.5, label = 'sampling ({:})'.format(aMD.total_sampling), linewidth = 0)
+plt.ylim(0, 0.6)
+plt.title(r'$ Multinomial \ distribution-PMF \ (base \ b = {:}) $'.format(aMD.base), fontsize = AlvaFontSize)
+plt.xlabel(r'$ m \ (member/run) $', fontsize = AlvaFontSize)
+plt.ylabel(r'$ Pr(k|b, m) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.8)
 plt.yticks(fontsize = AlvaFontSize*0.8) 
 plt.grid(True)
