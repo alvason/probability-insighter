@@ -257,7 +257,7 @@ gInput = np.arange(total_event)
 
 
 # plotting
-figure_name = ''
+figure_name = 'random_seed_base{:}'.format(aMD.base)
 file_suffix = '.png'
 save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
@@ -267,7 +267,7 @@ plot1 = figure.add_subplot(1, 2, 1)
 plot1.plot(gInput, randomSeed, color = 'gray', marker = 'o', label = 'data')
 plot1.plot(gInput, alva.AlvaMinMax(randomSeed), color = 'red', marker = 'o', label = 'minMaxSorting')
 plot1.grid(True)
-plt.title(r'$ Binomial \ randomness \ (mean = {:1.3f}) $'.format(meanP), fontsize = AlvaFontSize)
+plt.title(r'$ Multinomial \ randomness \ (base-b = {:}) $'.format(aMD.base), fontsize = AlvaFontSize)
 plt.xlabel(r'$ event-input $', fontsize = AlvaFontSize)
 plt.ylabel(r'$ output $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
@@ -278,7 +278,7 @@ plot2 = figure.add_subplot(1, 2, 2)
 plot2.plot(numberLevel, gLevel, color = 'red', marker = 'o', label = 'category') 
 
 plot2.grid(True)
-plt.title(r'$ Binomial \ distribution \ (events = {ev:},\ levels = {le:}) $'.format(ev = total_event, le = totalLevel)
+plt.title(r'$ Multinomial \ distribution \ (events = {ev:},\ levels = {le:}) $'.format(ev = total_event, le = totalLevel)
           , fontsize = AlvaFontSize)
 plt.xlabel(r'$ event/level $', fontsize = AlvaFontSize)
 plt.ylabel(r'$ level-range $', fontsize = AlvaFontSize)
