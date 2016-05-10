@@ -2,8 +2,9 @@
 ## Some important probility distributions
 
 ### [Multinomial distribution](https://github.com/alvason/probability-insighter/blob/master/code/multinomial_distribution.ipynb)
-![](/figure/multinomial-distribution-sampling-reality-base2.png)
 ![](/figure/multinomial-distribution-sampling-reality-base6.png)
+![](/figure/multinomial-distribution-sampling-reality-base2.png)
+![](/figure/multinomial-distribution-random_seed_base2.png)
 
 ### [Exponential distribution](https://github.com/alvason/probability-insighter/blob/master/code/xponential_random_distribution.ipynb)
 ![](/figure/exponential-distribution.png)
