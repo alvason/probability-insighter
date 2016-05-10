@@ -257,7 +257,7 @@ gInput = np.arange(total_event)
 
 
 # plotting
-figure_name = 'random_seed_base{:}'.format(aMD.base)
+figure_name = '-random_seed_base{:}'.format(aMD.base)
 file_suffix = '.png'
 save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
