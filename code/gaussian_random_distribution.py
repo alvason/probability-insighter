@@ -26,7 +26,7 @@ AlvaFigSize = (16, 7)
 numberingFig = 0
 # for saving figure
 saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
-file_name = 'multinomial-distribution'
+file_name = 'gaussian-distribution'
 
 # plotting
 figure_name = '-equation'
