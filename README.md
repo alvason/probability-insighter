@@ -15,6 +15,7 @@
 
 ### [Gaussian distribution](https://github.com/alvason/probability-insighter/blob/master/code/gaussian_random_distribution.ipynb)
 ![](/figure/gaussian-distribution.png)
+![](/figure/gaussian-distribution-distribution-quantile.png)
 
 ### [Logistic distribution](https://github.com/alvason/probability-insighter/blob/master/code/logistic_random_distribution.ipynb)
 ![](/figure/logistic-distribution.png)
