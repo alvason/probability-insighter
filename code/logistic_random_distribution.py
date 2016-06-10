@@ -1,21 +1,19 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
 
-# <markdowncell>
+# coding: utf-8
 
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
 # ### Logistic random distribution
 
-# <codecell>
+# In[1]:
 
 '''
 author: Alvason Zhenhua Li
 date:   03/19/2015
 '''
 
-%matplotlib inline
+get_ipython().magic(u'matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -48,7 +46,8 @@ plt.text(0, 1.0/6, r'$ 3-- \ P(d, m|x) \ is \ the \ probability \ with \ n-event
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[2]:
 
 '''Logistic randomness --- Logistic distribution'''
 totalPoint_Input = int(100 + 1)
@@ -123,6 +122,8 @@ figure.tight_layout()
 plt.savefig(save_figure, dpi = 300)
 plt.show()
 
-# <codecell>
+
+# In[ ]:
+
 
 

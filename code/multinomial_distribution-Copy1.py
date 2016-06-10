@@ -53,7 +53,7 @@ print ('Previous running time is {:}').format(previous_running_time)
 # '1'23456---5 work_way
 
 
-# In[7]:
+# In[3]:
 
 class multinomial_D(object):
     def __init__(cell, base = None, digit = None
@@ -196,7 +196,7 @@ www = aMD.work_way(total_wanted = 7)
 ppp.loc[www.index]
 
 
-# In[8]:
+# In[6]:
 
 ##########################################
 xx_all = []
@@ -243,7 +243,7 @@ plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
 plt.show()
 
 
-# In[9]:
+# In[7]:
 
 randomSeed = aMD.randomSeed_multinomial(work_way_all_all)
 meanP = randomSeed.sum() / len(randomSeed)

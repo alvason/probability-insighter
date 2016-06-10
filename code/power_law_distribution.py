@@ -4,7 +4,7 @@
 # # Probability-insighter
 # https://github.com/alvason/probability-insighter
 # 
-# ### Multinomial random distribution
+# ### Power-law distribution
 
 # In[1]:
 
@@ -28,7 +28,7 @@ AlvaFigSize = (16, 6)
 numberingFig = 0
 # for saving figure
 saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
-file_name = 'multinomial-distribution'
+file_name = 'power-law-distribution'
 AlvaColorCycle = ['blue', 'green', 'cyan'
                   , 'pink', 'purple', 'deepskyblue'
                   , 'red', 'lime']
@@ -53,7 +53,7 @@ print ('Previous running time is {:}').format(previous_running_time)
 # '1'23456---5 work_way
 
 
-# In[7]:
+# In[3]:
 
 class multinomial_D(object):
     def __init__(cell, base = None, digit = None
@@ -196,7 +196,7 @@ www = aMD.work_way(total_wanted = 7)
 ppp.loc[www.index]
 
 
-# In[8]:
+# In[4]:
 
 ##########################################
 xx_all = []
@@ -243,7 +243,7 @@ plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
 plt.show()
 
 
-# In[9]:
+# In[5]:
 
 randomSeed = aMD.randomSeed_multinomial(work_way_all_all)
 meanP = randomSeed.sum() / len(randomSeed)
@@ -288,6 +288,290 @@ plt.legend(loc = (0, -0.2))
 
 figure.tight_layout()
 plt.savefig(save_figure, dpi = 300)
+plt.show()
+
+
+# In[6]:
+
+class AlvaDistribution(object):
+    def __init__(cell, dataX, minX = None, maxX = None, fit_method = None, parameter = None, **kwargs):
+        dataX = dataX[dataX > 0]
+        if minX is None:
+            minX = min(dataX)       
+        if maxX is None:
+            maxX = max(dataX)
+        dataX = dataX[dataX >= minX]
+        dataX = dataX[dataX <= maxX]
+        cell.dataX = dataX
+        cell.minX = minX
+        cell.maxX = maxX
+        if fit_method is None:
+            fit_method = 'Likelihood'
+        cell.fit_method = fit_method
+        if parameter is None:
+            cell.parameter = cell._initial_parameter()
+        else:
+            cell._set_parameter(parameter)
+        
+    def fit(cell):
+        if cell.current_distribution == 'EwensSampling':
+            EwensPMF = cell._probability_mass_function(cell.dataX, cell.minX)
+            cell.EwensPMFxx = EwensPMF[0]
+            cell.EwensPMFyy = EwensPMF[1]
+            optimized_meter = EwensPMF[2]
+            # logLikelihood
+            # firstly, for accurate AIC, need to restore to original-size from unique-size
+            ePMF = AlvaPMF(cell.dataX, minX = cell.minX, normalization = False)
+            all_data = cell.EwensPMFyy * ePMF[1][0:len(cell.EwensPMFyy)]
+            log_pmf = np.log(all_data)
+            logLike = np.sum(log_pmf)
+            cell.max_logLikelihood = logLike
+            # update parameter
+            cell._set_parameter(optimized_meter) 
+            return (optimized_meter)
+        else:
+            if cell.fit_method == 'Likelihood':
+                def fit_function(alpha_meter):
+                    return cell.logLikelihood(alpha_meter)
+            # search the maximum (minimum for negative values)
+            from scipy import optimize
+            optimizing = optimize.fmin(lambda alpha_meter: -fit_function(alpha_meter)
+                                       , cell._initial_parameter(), full_output = 1, disp = False)
+
+            optimized_meter = optimizing[0]
+            negative_max_logLike = optimizing[1]
+            cell.max_logLikelihood = -negative_max_logLike
+        # update parameter
+        cell._set_parameter(optimized_meter) 
+        return (optimized_meter)
+
+    def logLikelihood(cell, alpha_meter):
+        cell._set_parameter(alpha_meter)
+        log_pmf = np.log(cell.pmf(cell.dataX, cell.minX)[1])
+        logL = np.sum(log_pmf)
+        return (logL)
+
+    # distribution of probability_mass_function
+    def pmf(cell, dataX, minX):
+        if cell.current_distribution == 'EwensSampling':
+            xx = cell.EwensPMFxx
+            probability = cell.EwensPMFyy
+        else:
+            xx = np.unique(dataX)
+            probability = cell._probability_mass_function(dataX, minX)
+        return (xx, probability)
+    
+    def random_integer_simulator(cell, total_dataX = None, alpha = None, minX = None):
+        if total_dataX is None:
+            total_dataX = len(cell.dataX)
+        if alpha is None:
+            alpha = cell.alpha
+        if minX is None:
+            minX = cell.minX
+        rr = np.random.uniform(size = total_dataX)
+        def pdf_cdf_connection(x, randomP):
+            connection = cell._cumulative_distribution_function(dataX = x, minX = minX, alpha = alpha) - (1 - randomP)
+            return connection
+        from scipy import optimize
+        xx = []
+        for r in rr:
+            solving = optimize.root(lambda x: pdf_cdf_connection(x, r), minX)
+            xx.append(solving.x[0])
+        xx = np.asarray(xx, dtype = int)
+        #xx = np.floor(xx)
+        return xx
+
+    def information_criterion(cell, logLike = None, total_parameter = None, total_sample = None):
+        if logLike is None:
+            logLike = cell.max_logLikelihood
+        if total_parameter is None:
+            total_parameter = len(cell.parameter)
+        if total_sample is None:
+            total_sample = len(np.unique(cell.dataX))
+        AIC = -2 * logLike + (2 * total_parameter)
+        BIC = -2 * logLike + total_parameter * np.log(total_sample)
+        return np.array([AIC, BIC])
+
+    def AlvaIntSequence(cell):
+        xx = np.arange(1, len(cell.dataX))
+        yy = cell._probability_mass_function(xx)
+        yy = yy / yy.min()
+        integer_sequence = np.floor(yy)
+        return (integer_sequence)
+
+###
+class PowerLaw(AlvaDistribution):
+    def __init__(cell, dataX, **kwargs):
+        AlvaDistribution.__init__(cell, dataX, **kwargs)
+        cell.current_distribution = 'PowerLaw'
+    
+    def _probability_mass_function(cell, dataX = None, minX = None):
+        if dataX is None:
+            dataX = cell.dataX
+        if minX is None:
+            minX = cell.minX
+        from scipy.special import zeta
+        constantN = 1.0 / zeta(cell.alpha, minX)
+        xPower = dataX**(-cell.alpha)
+        c_xPower = constantN * xPower 
+        return (c_xPower) 
+
+    def _cumulative_distribution_function(cell, dataX = None, minX = None, alpha = None):
+        if dataX is None:
+            dataX = cell.dataX
+        if minX is None:
+            minX = cell.minX
+        if alpha is None:
+            alpha = cell.alpha
+        from scipy.special import zeta
+        total_level = len(dataX)
+        power_cdf = np.zeros(total_level)
+        for xn in range(total_level):
+            power_cdf[xn] = zeta(alpha,  dataX[xn]) / zeta(alpha,  minX)
+        return power_cdf
+        
+    # distributions with alpha <= 1 are not valid (non-normalizable)
+    def _valid_parameter_range(cell):
+        return (cell.alpha > 1)
+    
+    def _initial_parameter(cell):
+        # using the exact value of continuous-case as the initial guessing-value of discrete-case fitting
+        # cell.alpha = 1 + (len(cell.dataX) / np.sum(np.log(cell.dataX / (cell.minX))))
+        cell.alpha = 2.0
+        cell.parameter = np.array([cell.alpha])
+        return (cell.parameter)
+
+    def _set_parameter(cell, parameter):
+        # if parameter is a scalar not array
+        if isinstance(parameter, (int, float)):
+            parameter = [parameter]
+        # for converting numpy-scalar (0-dimensional array()) to 0-dimensional array([]) 
+        parameter = np.atleast_1d(parameter)
+        parameter = np.asarray(parameter, dtype = float)
+        cell.parameter = parameter
+        cell.alpha = cell.parameter[0]
+        return(cell.parameter)
+##############################
+###### test-data 1 ###########
+test_alpha = float(2.308)
+total_event = 300
+xx = np.arange(1, total_event + 1)
+ap = PowerLaw(xx)
+pp = ap.random_integer_simulator(total_dataX = total_event, minX = 1, alpha = test_alpha)
+ppP = np.sort(pp)
+ppP = ppP[::-1]
+#print ('ppP', ppP)
+pdm =alva.AlvaPMF(pp)
+
+### plotting
+figure = plt.figure(figsize = (18, 6))
+window1 = figure.add_subplot(1, 2, 1)
+window1.plot(xx, pp, marker = 'o', markersize = 10, color = 'red', alpha = 0.3)
+plt.title(r'$ ramdon-process-PMF $', fontsize = AlvaFontSize*0.8)
+plt.xlabel(r'$ cell-number (N={:}) $'.format(total_event), fontsize = AlvaFontSize*0.8)
+plt.ylabel(r'$ P(n|N) $', fontsize = AlvaFontSize*0.8)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6)
+plt.xscale('log', basex = 10)
+plt.yscale('log', basex = 10)
+plt.grid(True)
+
+### plotting
+window2 = figure.add_subplot(1, 2, 2)
+window2.plot(pdm[0], pdm[1], marker = '*', markersize = 10, color = 'blue', alpha = 0.3)
+### raw data
+barWidth = 1.0/2
+window2.bar(pdm[0] - barWidth/2, pdm[1], width = barWidth
+           , edgecolor = 'blue', color = 'blue', alpha = 0.4
+           , label = '$ Empirical-distribution $')
+plt.title(r'$ ramdon-process-PMF $', fontsize = AlvaFontSize*0.8)
+plt.xlabel(r'$ cell-number (N={:}) $'.format(total_event), fontsize = AlvaFontSize*0.8)
+plt.ylabel(r'$ P(n|N) $', fontsize = AlvaFontSize*0.8)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6)
+plt.xscale('log', basex = 10)
+plt.yscale('log', basex = 10)
+plt.grid(True)
+plt.xlim(0, 1000)
+
+plt.show()
+
+
+# In[76]:
+
+test_alpha = float(2.9)
+birth_probability = 0.6
+total_event = 10**3
+xx = np.arange(1, total_event + 1)
+###
+minX = 1
+
+m = (1 - birth_probability) / birth_probability
+
+c = (test_alpha - 2) * m - minX
+power_alpha = 2 + (minX + c) / m
+print ('power_alpha = {:}'.format(power_alpha))
+species = np.zeros([total_event])
+
+i = 0
+species[i] = np.ceil(minX + c)
+s = species[i]
+
+while i < (total_event - 1):
+    # random (0, 1)
+    random_seed = np.random.random()
+    if random_seed < birth_probability:
+        i = i + 1
+        species[i] = np.ceil(minX + c)
+        s = s + species[i]
+    else:
+        # random (0, s)
+        random_seed = s * np.random.random()
+        x = 1
+        sp = species[0]
+        while (random_seed > sp) and x < (total_event - 1):
+            x = x + 1
+            sp = sp + species[x]
+        species[x] = species[x] + 1
+
+pp = species
+
+ppP = np.sort(pp)
+ppP = ppP[::-1]
+print ('ppP', ppP[0:100])
+pdm =alva.AlvaPMF(pp)
+
+### plotting
+figure = plt.figure(figsize = (18, 6))
+window1 = figure.add_subplot(1, 2, 1)
+window1.plot(xx, pp, marker = 'o', markersize = 10, color = 'red', alpha = 0.3)
+plt.title(r'$ Yule-process $', fontsize = AlvaFontSize*0.8)
+plt.xlabel(r'$ Process-step $'.format(total_event), fontsize = AlvaFontSize*0.8)
+plt.ylabel(r'$ Circle-area $', fontsize = AlvaFontSize*0.8)
+plt.xticks(fontsize = AlvaFontSize*0.8)
+plt.yticks(fontsize = AlvaFontSize*0.8)
+plt.xscale('log', basex = 10)
+plt.yscale('log', basex = 10)
+plt.grid(True)
+
+### plotting
+window2 = figure.add_subplot(1, 2, 2)
+window2.plot(pdm[0], pdm[1], marker = '*', markersize = 10, color = 'blue', alpha = 0.3)
+### raw data
+barWidth = 1.0/2
+window2.bar(pdm[0] - barWidth/2, pdm[1], width = barWidth
+           , edgecolor = 'blue', color = 'blue', alpha = 0.4
+           , label = '$ Empirical-distribution $')
+plt.title(r'$ Yule-process-PMF $', fontsize = AlvaFontSize*0.8)
+plt.xlabel(r'$ Circle-area $', fontsize = AlvaFontSize*0.8)
+plt.ylabel(r'$ Count \ of \ circle $', fontsize = AlvaFontSize*0.8)
+plt.xticks(fontsize = AlvaFontSize*0.8)
+plt.yticks(fontsize = AlvaFontSize*0.8)
+plt.xscale('log', basex = 10)
+plt.yscale('log', basex = 10)
+plt.grid(True)
+plt.xlim(0, 1000)
+plt.legend(fontsize = AlvaFontSize*0.8)
 plt.show()
 
 

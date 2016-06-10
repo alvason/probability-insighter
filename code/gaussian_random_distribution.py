@@ -18,19 +18,20 @@ get_ipython().magic(u'matplotlib inline')
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
-file_name = 'gaussian-distribution'
 
 import alva_machinery_probability as alva
 
 AlvaFontSize = 23
 AlvaFigSize = (16, 7)
 numberingFig = 0
+# for saving figure
+saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+file_name = 'multinomial-distribution'
 
 # plotting
 figure_name = '-equation'
 file_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(9, 6))
@@ -47,69 +48,154 @@ plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 
-# In[18]:
+# In[2]:
 
-def AlvaGaussianD(i, meanP, deviationP):
-    G_distribution = 0.0*i
-    G_distribution[:] = (1.0/(2*np.pi*deviationP)**(1.0/2)) * np.exp(-(1.0/2)*((i[:] - meanP)/deviationP)**2)
-    return (G_distribution)
+def gaussianPMF(total_event, meanP, deviationP):
+    x_event = np.arange(1, total_event + 1)
+    constantD = (2*np.pi)**(0.5) * deviationP
+    constantN = 1.0 / constantD
+    y_PMF = constantN * np.exp(-(0.5)*((x_event - meanP)/deviationP)**2)
+    return np.array([x_event, y_PMF])
 
-def AlvaGaussianC(m, meanP, deviationP, gaussianD):
-    B_C = 0.0*m
-    for j in range(np.size(m)):
-        for k in range(m[j]):
-            i = np.arange(k + 1)
-            B_distribution = gaussianD(i, meanP, deviationP)
-        B_C[j] = B_C[j] + B_distribution.sum()
-    return (B_C)
-
-total_event = int(100)
-i_event = np.arange(1, total_event + 1)
-totalPoint_Input = total_event
+total_event = int(60)
 meanP = total_event/2.0
-deviationP = 2.0
+deviationP = 9
 
-gaussian_D = AlvaGaussianD(i_event, meanP, deviationP)
+gaussian_PMF = gaussianPMF(total_event, meanP, deviationP)
+gaussian_CDF = np.array([gaussian_PMF[0], np.cumsum(gaussian_PMF[1])])
 
-print ('total-probability = {:}'.format(gaussian_D.sum()))
+print ('total-probability = {:}'.format(gaussian_PMF[1].sum()))
+figure_name = '-distribution-pmf-cdf'
+file_suffix = '.png'
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
+numberingFig = numberingFig + 1
 # plotting1
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
 plot1 = figure.add_subplot(1, 2, 1)
-plot1.plot(i_event, gaussian_D, marker ='o', color = 'green')
-if totalPoint_Input < 100:
-    plot1.set_xticks(i_event, minor = True) 
-    plot1.set_yticks(gaussian_D, minor = True) 
-    plot1.grid(True, which = 'minor')
-else:
-    plot1.grid(True, which = 'major')
+plot1.plot(gaussian_PMF[0], gaussian_PMF[1], marker ='o', color = 'green')
 plt.title(r'$ Gaussian \ distribution-PDF $', fontsize = AlvaFontSize)
 plt.xlabel(r'$ n-event \ with \ (m = {:}, \sigma = {:}) $'.format(meanP, deviationP), fontsize = AlvaFontSize)
 plt.ylabel(r'$ P(\sigma, \mu|n) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
-
+plt.grid()
 # plotting2
-i_event = np.arange(1, total_event + 1)
-gaussian_C = AlvaGaussianC(i_event, meanP, deviationP, AlvaGaussianD)
+
 plot2 = figure.add_subplot(1, 2, 2)
-plot2.plot(i_event, gaussian_C, marker ='o', color = 'red')
-if totalPoint_Input < 100:
-    plot2.set_xticks(i_event, minor = True) 
-    plot2.set_yticks(gaussian_C, minor = True) 
-    plot2.grid(True, which = 'minor')
-else:
-    plot2.grid(True, which = 'major')
+plot2.plot(gaussian_CDF[0], gaussian_CDF[1], marker ='o', color = 'red')
 plt.title(r'$ Gaussian \ distribution-CDF $', fontsize = AlvaFontSize)
 plt.xlabel(r'$ n-event \ with \ (m = {:}, \sigma = {:}) $'.format(meanP, deviationP), fontsize = AlvaFontSize)
 plt.ylabel(r'$ P(\sigma, \mu|n) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
-
+plt.grid()
 figure.tight_layout()
 plt.show()
 
 
-# In[15]:
+# In[3]:
+
+def binomialPMF(total_event, p):
+    x_event = np.arange(1, total_event + 1)
+    y_PMF = alva.productA(total_event) / (alva.productA(x_event) * alva.productA(total_event - x_event))                         * p**x_event * (1 - p)**(total_event - x_event)
+    return np.array([x_event, y_PMF])
+
+
+total_event = int(60)
+p = 0.5
+
+binomial_PMF = binomialPMF(total_event, p)
+print ('total-probability = {:f}'.format(binomial_PMF[1].sum()))
+# plotting1
+figure = plt.figure(numberingFig, figsize = AlvaFigSize)
+plot1 = figure.add_subplot(1, 2, 1)
+plot1.plot(binomial_PMF[0], binomial_PMF[1], marker ='o', color = 'green')
+plt.title(r'$ Binomial \ distribution-PMF \ (p={:}) $'.format(p), fontsize = AlvaFontSize)
+plt.xlabel(r'$ n-event \ within \ total-event \ (N={:}) $'.format(total_event), fontsize = AlvaFontSize)
+plt.ylabel(r'$ P(n|N) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6)  
+plt.grid()
+# plotting2
+binomial_CDF = np.array([binomial_PMF[0], np.cumsum(binomial_PMF[1])])
+plot2 = figure.add_subplot(1, 2, 2)
+plot2.plot(binomial_CDF[0], binomial_CDF[1], marker ='o', color = 'red')
+plt.title(r'$ Binomial \ distribution-CDF \ (p={:}) $'.format(p), fontsize = AlvaFontSize)
+plt.xlabel(r'$ n-event \ within \ total-event \ (N={:}) $'.format(total_event), fontsize = AlvaFontSize)
+plt.ylabel(r'$ P(n|N) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6)  
+plt.grid()
+figure.tight_layout()
+plt.show()
+
+
+# In[4]:
+
+raw_data = np.random.standard_normal(size = 3000)
+raw_data = np.random.normal(size = 3000)
+raw_PMF = alva.AlvaPDF(raw_data, total_level = total_event, empty_leveler_filter = False)
+raw_CDF = np.array([raw_PMF[0], np.cumsum(raw_PMF[1])])
+# plotting1
+figure = plt.figure(numberingFig, figsize = AlvaFigSize)
+plot1 = figure.add_subplot(1, 2, 1)
+plot1.plot(raw_PMF[0], raw_PMF[1], marker ='o', color = 'green')
+plt.title(r'$ Raw \ distribution-PMF $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ n-event \ within \ total-event \ (N={:}) $'.format(len(raw_PMF[0])), fontsize = AlvaFontSize)
+plt.ylabel(r'$ P(n|N) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6)  
+plt.grid()
+# plotting2
+plot2 = figure.add_subplot(1, 2, 2)
+plot2.plot(raw_CDF[0], raw_CDF[1], marker ='o', color = 'red')
+plt.title(r'$ Raw \ distribution-CDF $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ n-event \ within \ total-event \ (N={:}) $'.format(total_event), fontsize = AlvaFontSize)
+plt.ylabel(r'$ P(n|N) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6)  
+plt.grid()
+figure.tight_layout()
+plt.show()
+
+
+# In[5]:
+
+### plotting (quantile-quantile)
+figure_name = '-distribution-quantile'
+file_suffix = '.png'
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
+numberingFig = numberingFig + 1
+figure = plt.figure(numberingFig, figsize = (9, 6))
+window = figure.add_subplot(1, 1, 1)
+window.set_title(r'$ Quantile-Quantile $', fontsize = AlvaFontSize)
+### boundary line
+window.plot(np.arange(0, 1, 0.001), np.arange(0, 1, 0.001), color = 'black', linewidth = 1)
+### model[0] ###
+window.plot(raw_CDF[1], gaussian_CDF[1], marker = 'o', markersize = 10, color = 'green', alpha = 0.6
+            , label = '$ gaussian $')
+###
+window.set_xlabel('$ Empirical \ Quantiles $', fontsize = AlvaFontSize)
+window.set_ylabel('$ Gaussian \ Quantiles $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.9) 
+plt.yticks(fontsize = AlvaFontSize*0.9) 
+window.grid(True) 
+window.legend(loc = 'upper left', fontsize = AlvaFontSize*0.85) 
+### model[1] ###
+plot2 = window.twinx()
+plot2.plot(raw_CDF[1], binomial_CDF[1], marker = '*', markersize = 10, color = 'red', alpha = 0.6
+           , label = '$ binomial $')
+plot2.set_ylabel('$ Binomial \ Quantiles $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.9) 
+plt.yticks(fontsize = AlvaFontSize*0.9) 
+plot2.grid(True) 
+plot2.legend(loc = 'lower right', fontsize = AlvaFontSize*0.85) 
+figure.tight_layout() 
+plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
+plt.show()
+
+
+# In[6]:
 
 '''Gaussian randomness --- Gaussian distribution --- Standard normal distribution'''
 
@@ -134,12 +220,12 @@ numberLevel = category[1]
 
 maxEvent_per_level = alva.AlvaMinMax(numberLevel)[-1]
 print ('max-events/level = {:}'.format(maxEvent_per_level))
-gaussian_D = maxEvent_per_level * AlvaGaussianD(gLevel, meanP, deviationP)
+gaussian_D = maxEvent_per_level * gaussianPMF(len(gLevel), meanP, deviationP)[1]
 
 # plotting
 figure_name = ''
 file_suffix = '.png'
-save_figure = os.path.join(dir_path, file_name + figure_name + file_suffix)
+save_figure = os.path.join(saving_dir_path, file_name + figure_name + file_suffix)
 
 numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
@@ -183,7 +269,7 @@ plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 
-# In[4]:
+# In[7]:
 
 def AlvaIntegrateArea(out_i, min_i, max_i, totalGPoint_i):
     spacing_i = np.linspace(min_i, max_i, num = totalGPoint_i, retstep = True)

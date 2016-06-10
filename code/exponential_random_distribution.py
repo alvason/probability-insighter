@@ -44,7 +44,7 @@ plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 
-# In[2]:
+# In[19]:
 
 def AlvaExpD(i, meanP):
     P_distribution = 0.0*i
@@ -72,40 +72,99 @@ print ('total-probability = {:f}'.format(exp_D.sum()))
 figure = plt.figure(numberingFig, figsize = AlvaFigSize)
 plot1 = figure.add_subplot(1, 2, 1)
 plot1.plot(i_event, exp_D, marker ='o', color = 'green')
-if totalPoint_Input < 100:
-    plot1.set_xticks(i_event, minor = True) 
-    plot1.set_yticks(exp_D, minor = True) 
-    plot1.grid(True, which = 'minor')
-else:
-    plot1.grid(True, which = 'major')
 plt.title(r'$ Exponential \ distribution-PMF $', fontsize = AlvaFontSize)
 plt.xlabel(r'$ n-event \ with \ mean-event \ (m = {:}) $'.format(meanP), fontsize = AlvaFontSize)
 plt.ylabel(r'$ P(m|n) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
-
+plt.grid(True)
 # plotting2
 i_event = np.arange(1, total_event + 1)
 exp_C = AlvaExpC(i_event, meanP, AlvaExpD)
 plot2 = figure.add_subplot(1, 2, 2)
 plot2.plot(i_event, exp_C, marker ='o', color = 'red')
-if totalPoint_Input < 100:
-    plot2.set_xticks(i_event, minor = True) 
-    plot2.set_yticks(exp_C, minor = True) 
-    plot2.grid(True, which = 'minor')
-else:
-    plot2.grid(True, which = 'major')
+
 plt.title(r'$ Exponential \ distribution-CDF $', fontsize = AlvaFontSize)
 plt.xlabel(r'$ n-event \ with \ mean-event \ (m = {:}) $'.format(meanP), fontsize = AlvaFontSize)
 plt.ylabel(r'$ P(m|n) $', fontsize = AlvaFontSize)
 plt.xticks(fontsize = AlvaFontSize*0.6)
 plt.yticks(fontsize = AlvaFontSize*0.6) 
-
+plt.grid(True)
 figure.tight_layout()
 plt.show()
 
 
-# In[7]:
+# In[21]:
+
+def AlvaGaussianD(i, meanP, deviationP):
+    G_distribution = 0.0*i
+    constantD = (2*np.pi)**(0.5) * deviationP
+    constantN = 1.0 / constantD
+    G_distribution[:] = constantN * np.exp(-(0.5)*((i[:] - meanP)/deviationP)**2)
+    return (G_distribution)
+
+def AlvaGaussianC(m, meanP, deviationP, gaussianD):
+    B_C = 0.0*m
+    for j in range(np.size(m)):
+        for k in range(m[j]):
+            i = np.arange(k + 1)
+            B_distribution = gaussianD(i, meanP, deviationP)
+        B_C[j] = B_C[j] + B_distribution.sum()
+    return (B_C)
+
+total_event = int(30)
+i_event = np.arange(1, total_event + 1)
+totalPoint_Input = total_event
+meanP = total_event/2.0
+deviationP = 3
+
+gaussian_D = AlvaGaussianD(i_event, meanP, deviationP)
+
+print ('total-probability = {:}'.format(gaussian_D.sum()))
+# plotting1
+figure = plt.figure(numberingFig, figsize = AlvaFigSize)
+plot1 = figure.add_subplot(1, 2, 1)
+plot1.plot(i_event, gaussian_D, marker ='o', color = 'green')
+plt.title(r'$ Gaussian \ distribution-PDF $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ n-event \ with \ (m = {:}, \sigma = {:}) $'.format(meanP, deviationP), fontsize = AlvaFontSize)
+plt.ylabel(r'$ P(\sigma, \mu|n) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6) 
+plt.grid()
+# plotting2
+i_event = np.arange(1, total_event + 1)
+gaussian_C = AlvaGaussianC(i_event, meanP, deviationP, AlvaGaussianD)
+plot2 = figure.add_subplot(1, 2, 2)
+plot2.plot(i_event, gaussian_C, marker ='o', color = 'red')
+plt.title(r'$ Gaussian \ distribution-CDF $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ n-event \ with \ (m = {:}, \sigma = {:}) $'.format(meanP, deviationP), fontsize = AlvaFontSize)
+plt.ylabel(r'$ P(\sigma, \mu|n) $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6) 
+plt.grid()
+figure.tight_layout()
+plt.show()
+
+
+# In[23]:
+
+'''Quantile-Quantile'''
+# plotting1
+figure = plt.figure(numberingFig, figsize = AlvaFigSize)
+window = figure.add_subplot(1, 2, 1)
+window.plot(np.arange(0, 1, 0.001), np.arange(0, 1, 0.001), color = 'black', linewidth = 1)
+window.plot(gaussian_C, exp_C, marker ='o', color = 'green')
+plt.title(r'$ Quantile-Quantile $', fontsize = AlvaFontSize)
+plt.xlabel(r'$ Gaussian \ Quantile $'.format(), fontsize = AlvaFontSize)
+plt.ylabel(r'$ Exponential \ Quantile $', fontsize = AlvaFontSize)
+plt.xticks(fontsize = AlvaFontSize*0.6)
+plt.yticks(fontsize = AlvaFontSize*0.6) 
+plt.grid()
+figure.tight_layout()
+plt.show()
+
+
+# In[4]:
 
 '''Exponential randomness --- Exponential distribution'''
 total_event = int(1000)
