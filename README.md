@@ -23,9 +23,9 @@
 
 # correlation-coefficient
 ### fitness of correlation among data-sets
-####[linear fitness](https://github.com/alvason/correlation-coefficient/blob/master/code/linear_fitness.ipynb)
+### [linear fitness](https://github.com/alvason/correlation-coefficient/blob/master/code/linear_fitness.ipynb)
 ![](/figure/linear-fitness-correlation.png)
 ![](/figure/linear-fitness-equation.png)
 
-####[probabilistic equilibrium](https://github.com/alvason/probability-insighter/blob/master/code/probabilistic_stationary.ipynb)
+### [probabilistic equilibrium](https://github.com/alvason/probability-insighter/blob/master/code/probabilistic_stationary.ipynb)
 ![](/figure/probabilistic-stationary-equilibrium.png)
