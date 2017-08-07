@@ -13,7 +13,7 @@ author: Alvason Zhenhua Li
 date:   07/18/2015
 '''
 
-get_ipython().magic(u'matplotlib inline')
+get_ipython().magic('matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt

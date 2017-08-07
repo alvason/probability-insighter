@@ -6,7 +6,7 @@
 # 
 # ### home-made machinery for insight into randomness
 
-# In[ ]:
+# In[1]:
 
 '''
 author: Alvason Zhenhua Li
@@ -17,7 +17,7 @@ Home-made machinery for sorting a list from min-max
 import numpy as np
 
 
-get_ipython().magic(u'matplotlib inline')
+get_ipython().magic('matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,10 +47,10 @@ class TimeWatch(object):
 ###############
 import datetime
 previous_running_time = datetime.datetime.now()
-print ('Previous running time is {:}').format(previous_running_time)
+print ('Previous running time is {:}'.format(previous_running_time))
 
 
-# In[ ]:
+# In[2]:
 
 '''
 author: Alvason Zhenhua Li
@@ -193,7 +193,7 @@ def AlvaPMF(dataX, minX = None, maxX = None, total_level = None, normalization =
 
 
 
-# In[ ]:
+# In[3]:
 
 ### 
 def productA(xx):
@@ -212,7 +212,7 @@ def productA(xx):
     return productX
 
 
-# In[1]:
+# In[4]:
 
 # min-max sorting
 def AlvaMinMax(data):

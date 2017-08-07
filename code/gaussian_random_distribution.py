@@ -13,7 +13,7 @@ author: Alvason Zhenhua Li
 date:   03/19/2015
 '''
 
-get_ipython().magic(u'matplotlib inline')
+get_ipython().magic('matplotlib inline')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ AlvaFontSize = 23
 AlvaFigSize = (16, 7)
 numberingFig = 0
 # for saving figure
-saving_dir_path = '/Users/al/Desktop/GitHub/probability-insighter/figure'
+saving_dir_path = '/Users/azl/Desktop/GitHub/probability-insighter/figure'
 file_name = 'gaussian-distribution'
 
 # plotting
@@ -91,6 +91,7 @@ plt.yticks(fontsize = AlvaFontSize*0.6)
 plt.grid()
 figure.tight_layout()
 plt.show()
+plt.savefig(save_figure, dpi = 300, bbox_inches = 'tight')
 
 
 # In[3]:
@@ -269,7 +270,7 @@ plt.savefig(save_figure, dpi = 300)
 plt.show()
 
 
-# In[7]:
+# In[8]:
 
 def AlvaIntegrateArea(out_i, min_i, max_i, totalGPoint_i):
     spacing_i = np.linspace(min_i, max_i, num = totalGPoint_i, retstep = True)
@@ -283,9 +284,9 @@ def gaussianA(i):
     return (inOut)
 
 ggg = AlvaIntegrateArea(gaussianA, -10, 10, 100)
-print ggg
+print (ggg)
 ppp = (np.pi)**(1.0/2)
-print ppp
+print (ppp)
 
 
 # In[ ]:
