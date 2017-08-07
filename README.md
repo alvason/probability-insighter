@@ -27,5 +27,7 @@
 ![](/figure/linear-fitness-correlation.png)
 ![](/figure/linear-fitness-equation.png)
 
+# probabilistic-event-reaction
+### probabilistic event reaction ---- probabilistic state machinery
 ### [probabilistic equilibrium](https://github.com/alvason/probability-insighter/blob/master/code/probabilistic_stationary.ipynb)
 ![](/figure/probabilistic-stationary-equilibrium.png)
